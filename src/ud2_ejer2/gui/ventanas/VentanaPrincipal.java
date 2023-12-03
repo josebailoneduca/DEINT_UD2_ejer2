@@ -9,22 +9,53 @@ package ud2_ejer2.gui.ventanas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import ud2_ejer2.gui.herramientas.DibujoLibre;
 import ud2_ejer2.gui.herramientas.Herramienta;
 
 /**
+ * Clase central del ejercicio UI2_2
+ *
+ * Ademas de mostrar la interfaz grafica se encarga de almacenar el estado
+ * respecto a qué herramienta de dibujo es la activa y qué valores de dibujado
+ * deben usarse (color, grosor, tamaños...)
+ *
+ *
+ *
+ *
  *
  * @author Jose Javier BO
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
-    
+
     public Herramienta herramientaActual;
 
-    
     /**
-     * Creates new form VentanaPrincial
+     * Constructor. Inicia los componentes de la GUI, asigna el listener para
+     * escuchar los clicks en los radiobuttons de herramientas y la escucha de
+     * raton sobre el panel de dibujo que es de clase Lienzo.
+     *
+     * - Cuando el listener de botones de herramientas detecta la selección de
+     * una nueva herramienta el lístener informa a esta clase de qué herramienta
+     * ha sido la elegida para que la instancie y la establezca como
+     * "herramienta actual" que será con la que se dibuje.
+     *
+     * - Cuando el listener de ratón recibe algun evento recoge la herramienta
+     * actual definida en esta clase y le manda mensajes a la herramienta según
+     * el evento recibido.
+     *
+     * - Las herramientas durante su actividad recogen los datos de
+     * configuracion para dibujar de los componentes de GUI de esta clase.
+     * Ademas algunas actualizan información de algunos componentes.
+     *
+     *
+     * @see Lienzo
+     * @see ListenerRaton
+     * @see ListenerRbHerramientas
+     * @see Herramienta
      */
     public VentanaPrincipal() {
         initComponents();
@@ -32,7 +63,106 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         //inicializacion de valores
         lienzo.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         resetValores();
-        setHerramienta(new DibujoLibre(this));
+        setHerramienta(DibujoLibre.class);
+    }
+
+    /**
+     * Inicializa y asigna los listner de ratón sobre el lienzo y el
+     * Actionlistener de radiobutton de herramientas
+     */
+    private void initEventos() {
+        //eventos de lienzo
+        ListenerRaton lr = new ListenerRaton(this);
+        lienzo.addMouseListener(lr);
+        lienzo.addMouseMotionListener(lr);
+        lienzo.addMouseWheelListener(lr);
+
+        //eventos de selector de herramientas
+        ListenerRbHerramientas listenerRbHerramientas = new ListenerRbHerramientas(this);
+        rbDibujoLibre.addActionListener(listenerRbHerramientas);
+        rbLinea.addActionListener(listenerRbHerramientas);
+        rbRectangulo.addActionListener(listenerRbHerramientas);
+        rbOvalo.addActionListener(listenerRbHerramientas);
+        rbRectanguloRedondo.addActionListener(listenerRbHerramientas);
+        rbArco.addActionListener(listenerRbHerramientas);
+        rbPoligono.addActionListener(listenerRbHerramientas);
+        rbPolilinea.addActionListener(listenerRbHerramientas);
+        rbTexto.addActionListener(listenerRbHerramientas);
+    }
+
+    /**
+     * Actualiza las cajas de coordenadas X e Y que muestran las coordenadas del
+     * raton
+     *
+     * @param x Coordenada X
+     * @param y Coordenada Y
+     */
+    void actualizaCoordenadas(int x, int y) {
+
+        outputX.setText("" + x);
+        outputY.setText("" + y);
+    }
+
+    /**
+     * Crea una herramienta basandose en una clase recibida y la asigna como
+     * herramientaActual
+     *
+     * @param claseNuevaHerramienta Clase con la que construir la instancia.
+     */
+    public void setHerramienta(Class<?> claseNuevaHerramienta) {
+        try {
+            if (herramientaActual != null) {
+                herramientaActual.desactivar();
+            }
+
+            Constructor<?> constructor = claseNuevaHerramienta.getConstructor(VentanaPrincipal.class, Lienzo.class);
+            herramientaActual = (Herramienta) constructor.newInstance(this, lienzo);
+            herramientaActual.activar();
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
+        }
+    }
+
+    /**
+     * Pone los valores por defecto en las interfaz gráfica
+     */
+    public void resetValores() {
+        inputRectRedAnchoCirculo.setText("20");
+        inputRectRedAltoCirculo.setText("20");
+        inputArcoInicio.setText("0");
+        inputArcoAngulo.setText("135");
+        inputPoligonoNumPuntos.setText("3");
+        inputPolilineaNumPuntos.setText("3");
+        inputTexto.setText("Escribe un texto");
+        inputTextoTamano.setText("40");
+        inputComunGrosor.setText("2");
+        inputComunAncho.setText("200");
+        inputComunAlto.setText("250");
+    }
+
+    /**
+     * Agrega el valor recibido al grosor de trazo actual. Tiene una limitación inferior
+     * de 1
+     * 
+     * @param i El valor a agregar. Negativo para reducir el trazo y positivo para aumentarlo
+     */
+    void cambiaGrosorTrazo(int i) {
+        try {
+            int grosor = (Integer.parseInt(inputComunGrosor.getText())) + i;
+            if (grosor < 1) {
+                grosor = 1;
+            }
+            inputComunGrosor.setText("" + grosor);
+        } catch (NumberFormatException ex) {
+        }
+    }
+
+    /**
+     * Muestra un mensaje de error usando un JOptionPane
+     *
+     * @param msg El mensaje a mostrar
+     */
+    public void msgError(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -262,6 +392,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         buttonGroupHerramientas.add(rbPolilinea);
         rbPolilinea.setText("Polilínea");
+        rbPolilinea.setActionCommand("polilinea");
 
         lbnpuntos.setText("Nº Puntos:");
 
@@ -295,6 +426,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         buttonGroupHerramientas.add(rbTexto);
         rbTexto.setText("Texto");
+        rbTexto.setActionCommand("texto");
 
         lbTamano.setText("Tamaño:");
 
@@ -304,11 +436,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         inputTextoTamano.setText("12");
 
-        inputTextoEstilo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Itálica", "Negrita", "Italica y Negrita" }));
+        inputTextoEstilo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Italica", "Negrita", "Italica y Negrita" }));
 
         lbFuente.setText("Fuente:");
 
-        inputTextoFuente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Itálica", "Negrita", "Italica y Negrita" }));
+        inputTextoFuente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Arial", "Calibri", "Comic Sans MS", "Courier New", "Impact", "MS Gothic", "Times New Roman" }));
 
         javax.swing.GroupLayout panTipoGrafico5Layout = new javax.swing.GroupLayout(panTipoGrafico5);
         panTipoGrafico5.setLayout(panTipoGrafico5Layout);
@@ -648,7 +780,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         lienzoLayout.setVerticalGroup(
             lienzoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 625, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -672,55 +804,35 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Abre el selector de color
+     *
+     * @param evt
+     */
     private void panelColorSeleccionadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelColorSeleccionadoMouseClicked
-        abrirSelectorDecolor();
+        Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelColorSeleccionado.getBackground());
+        if (colorSeleccionado != null)
+            panelColorSeleccionado.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelColorSeleccionadoMouseClicked
 
+    /**
+     * Limpia el lienzo y resetea la herramienta actual
+     *
+     * @param evt
+     */
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        if (herramientaActual!=null)
-            herramientaActual.desactivar();
+        //limpiar el lienzo
         Graphics2D g = lienzo.getBufferG2D();
         g.setColor(Color.white);
         g.fillRect(0, 0, lienzo.buffer.getWidth(), lienzo.buffer.getHeight());
         lienzo.repaint();
+
+        //refrescar la herramienta actual
+        herramientaActual.desactivar();
+        setHerramienta(herramientaActual.getClass());
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VentanaPrincipal().setVisible(true);
-            }
-        });
-    }
-
+// <editor-fold defaultstate="collapsed" desc="Variables generadas"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLimpiar;
     private javax.swing.ButtonGroup buttonGroupHerramientas;
@@ -787,63 +899,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrollHeramientas;
     public javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
+//</editor-fold>
+//</editor-fold>
 
-    private void initEventos() {
-        //eventos de lienzo
-        ListenerRaton lr = new ListenerRaton(this);
-        lienzo.addMouseListener(lr);
-        lienzo.addMouseMotionListener(lr);
-        //eventos de selector
-        ListenerRbHerramientas listenerRbHerramientas=new ListenerRbHerramientas(this);
-        rbDibujoLibre.addActionListener(listenerRbHerramientas);
-        rbLinea.addActionListener(listenerRbHerramientas);
-        rbRectangulo.addActionListener(listenerRbHerramientas);
-        rbOvalo.addActionListener(listenerRbHerramientas);
-        rbRectanguloRedondo.addActionListener(listenerRbHerramientas);
-        rbArco.addActionListener(listenerRbHerramientas);
-        rbPoligono.addActionListener(listenerRbHerramientas);
-    }
-
-    public void setHerramientaActual(Herramienta herramienta){
-        herramientaActual=herramienta;
-        herramientaActual.setLienzo(lienzo);
-    }
-   
-    private void abrirSelectorDecolor() {
-        Color colorSeleccionado =  JColorChooser.showDialog(this, "Seleccione un color", panelColorSeleccionado.getBackground());
-        if (colorSeleccionado!=null)
-        panelColorSeleccionado.setBackground(colorSeleccionado);
-    }
-
-    void actualizaCoordenadas(int x, int y) {
-        
-        outputX.setText(""+x);
-        outputY.setText(""+y);
-    }
-
-    public void msgError(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void setHerramienta(Herramienta nuevaHerramienta) {
-        if (herramientaActual!=null)
-            herramientaActual.desactivar();
-        herramientaActual=nuevaHerramienta;
-        herramientaActual.setLienzo(lienzo);
-        herramientaActual.activar();
-    }
-    
-    public void resetValores(){
-        inputRectRedAnchoCirculo.setText("20");
-        inputRectRedAltoCirculo.setText("20");
-        inputArcoInicio.setText("0");
-        inputArcoAngulo.setText("135");
-        inputPoligonoNumPuntos.setText("3");
-        inputPolilineaNumPuntos.setText("3");
-        inputTexto.setText("Escribe un texto");
-        inputTextoTamano.setText("12");
-        inputComunGrosor.setText("1");
-        inputComunAncho.setText("200");
-        inputComunAlto.setText("250");
-    }
 }

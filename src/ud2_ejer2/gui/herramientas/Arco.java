@@ -6,113 +6,124 @@ Lista de paquetes:
  */
 package ud2_ejer2.gui.herramientas;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
+import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
+ * Herramienta para dibujar arco. 
+ * Su funcionameinto es:
+ * -Al pulsarse el raton se guarda la imagen actual del lienzo en el buffer temporal y se lanza el dibujado
+ * -Al arrastrase el ratón se redibuja el bufer temporal en el lienzo y se superpone el dibujo del arco
+ *  permitiendo ver de forma actualizada donde se va a colocar el arco
  *
+ * @see Herramienta
  * @author Jose Javier BO
  */
 public class Arco extends Herramienta {
 
-    BufferedImage tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-    int inicio=0;
-    int angulo=0;
-    public Arco(VentanaPrincipal ventanaPrincipal) {
-        super(ventanaPrincipal);
+
+    /**
+     * Angulo inicial del arco
+     */
+    int inicio = 0;
+
+    /**
+     * Grados que abarca el angulo
+     */
+    int angulo = 0;
+
+    /**
+     * Constructor
+     *
+     * @param ventanaPrincipal Referencia a la ventana principal desde la que
+     * coger los parametros
+     * @param lienzo Referencia al lienzo de dibujo
+     */
+    public Arco(VentanaPrincipal ventanaPrincipal,Lienzo lienzo) {
+        super(ventanaPrincipal,lienzo);
     }
 
-    @Override
-    public void mouseMoved(Point punto) {
-    }
-
+    /**
+     * Al arrastrar se lanza el dibujado
+     * @param punto posicion del raton
+     */
     @Override
     public void mouseDragged(Point punto) {
-        //limpiar lienzo
-        Graphics2D g = lienzo.getBufferG2D();
-        setParametrosDibujo(g);
-        g.setBackground(new Color(255, 255, 255, 0));
-        g.clearRect(0, 0, lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight());
-
-        //dibujar bufferTemporal que tiene la imagen original
-        g.drawImage(tmpBuffer, 0, 0, null);
-
-        //dibujar angulo
-        if (soloBorde) {
-            g.drawArc(punto.x-(ancho/2), punto.y-(alto/2), ancho, alto,inicio,angulo);
-        } else {
-            g.fillArc(punto.x-(ancho/2), punto.y-(alto/2), ancho, alto,inicio,angulo);
-        }
-        lienzo.repaint();
+        //dibujar el arco
+        dibujar(punto);
     }
 
     
-    
-    
-    @Override
-    public void mouseClicked(Point punto) {
-
-    }
-
+    /**
+     * Al pulsar se guarda en el buffer el dibujo original y se lanza el dibujado del arco
+     * @param punto Punto con las coordenadas a usara en el dibujo
+     */
     @Override
     public void mousePressed(Point punto) {
+        //refrescar parametros
         if (!getParametros()) {
             return;
         }
-        //guardar original en buffer temporal
-        Graphics2D g = lienzo.getBufferG2D();
-        setParametrosDibujo(g);
-        tmpBuffer = new BufferedImage(lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight(), BufferedImage.TYPE_INT_ARGB);
-        tmpBuffer.getGraphics().drawImage(lienzo.getBuffer(), 0, 0, null);
+        //guardar la imagen original en el buffer
+        guardarLienzoEnBufferTemporal();
+        //digujar el arco
+        dibujar(punto);
+    }
 
+
+
+    /**
+     * Dibuja el elemento limpiando el lienzo, redibujando la imagen original y luego dibujando el arco
+     * @param punto Coordenadas para el dibujo
+     */
+    private void dibujar(Point punto) {
+         // Actualizar los parametros de dibujado
+        if (!getParametros()) {
+            return;
+        }
+        //limpiar lienzo
+        Graphics2D g = lienzo.getBufferG2D();
+        //Refrescar los parametros de dibujo en g
+        setParametrosDibujo(g);
+        
+        //pintar la imagen original
+        pintarBufferTemporalEnLienzo();
+        
         //dibujar angulo
         if (soloBorde) {
-            g.drawArc(punto.x-(ancho/2), punto.y-(alto/2), ancho, alto,inicio,angulo);
+            g.drawArc(punto.x - (ancho / 2), punto.y - (alto / 2), ancho, alto, inicio, angulo);
         } else {
-            g.fillArc(punto.x-(ancho/2), punto.y-(alto/2), ancho, alto,inicio,angulo);
+            g.fillArc(punto.x - (ancho / 2), punto.y - (alto / 2), ancho, alto, inicio, angulo);
         }
         lienzo.repaint();
     }
-
+    
+    
+    /**
+     * Ademas de recoger los parametros comunes recoge los parametros especificos del arco
+     * @return True si se han podido coger los parametros. False si ha habido algun error
+     */
     @Override
     protected boolean getParametros() {
-        if (!super.getParametros()) 
+        if (!super.getParametros()) {
             return false;
-        try{
-        inicio= Integer.parseInt(vp.inputArcoInicio.getText());
-        }catch(NumberFormatException ex){
-            vp.msgError("Inicio del arco no válido");
-                    return false;
         }
-        
-        try{
-        angulo= Integer.parseInt(vp.inputArcoAngulo.getText());
-        }catch(NumberFormatException ex){
+        try {
+            inicio = Integer.parseInt(vp.inputArcoInicio.getText());
+        } catch (NumberFormatException ex) {
+            vp.msgError("Inicio del arco no válido");
+            return false;
+        }
+
+        try {
+            angulo = Integer.parseInt(vp.inputArcoAngulo.getText());
+        } catch (NumberFormatException ex) {
             vp.msgError("Angulo del arco no válido");
-                    return false;
-        }         
+            return false;
+        }
+
         return true;
     }
-    
-    
-    
-
-    @Override
-    public void mouseReleased(Point punto) {
-
-    }
-
-    @Override
-    public void activar() {
-
-    }
-
-    @Override
-    public void desactivar() {
-
-    }
-
 }

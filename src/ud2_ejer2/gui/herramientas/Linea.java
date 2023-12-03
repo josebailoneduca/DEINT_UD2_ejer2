@@ -5,111 +5,129 @@ LICENCIA JOSE JAVIER BO
 Lista de paquetes:
  */
 package ud2_ejer2.gui.herramientas;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
- *
+ * Herramienta para dibujar una linea.
+ * Su funcionamiento es:
+ * - Al soltarse el botón del ratón se registra la posicion y se agrega a una lista.
+ * - Si es el primer punto de la lista se guarda en el buffer temporal el estado del lienzo
+ * - Si es el ultimo punto se resetea la lista.
+ * 
+ * En función de esa lista, cuando se mueve el ratón, se dibuja la linea:
+ *  -Si no hay puntos no dibuja nada
+ *  -Si hay uno dibuja en el lienzo lo almacenado en el buffer(imagen original) y se dibuja la linea
+ * 
+ * 
+ * @see Herramienta
+ * @see Herramienta
  * @author Jose Javier BO
  */
 public class Linea extends Herramienta {
+    //lista de puntos que componen la linea
     private ArrayList<Point> puntos=new ArrayList<Point>();
+    
+    //puntos totales
     private int puntosTotales=2;
+    
+    //puntos que quedan por marcar
     private int puntosRestantes=2;
-    BufferedImage tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-    public Linea(VentanaPrincipal ventanaPrincipal) {
-            super(ventanaPrincipal);
+    
+    
+    /**
+     * Constructor 
+     * @param ventanaPrincipal Referencia a la ventana principal
+     * @param lienzo  Referencia al lienzo en el que dibujar
+     */
+    public Linea(VentanaPrincipal ventanaPrincipal,Lienzo lienzo) {
+            super(ventanaPrincipal,lienzo);
             actualizaTextoPuntos();
     }
 
+    /**
+     * Solo hace algo si ya se ha agregado un punto en la lista de puntos. En ese caso 
+     * pinta el buffer temporal en el lienzo y dibuja una línea desde el punto existente
+     * hasta la posicion del raton. Esto hace que al ir moviendo el raton se vea una referencia
+     * de donde se va  a dibujar la linea
+     * 
+     * @param punto Posicion actual del raton
+     */
     @Override
     public void mouseMoved(Point punto) {
-        if (puntosRestantes<puntosTotales&&getParametros()){
-            //limpiar lienzo
+        //si se ha agregado un solo punto es que hay que dibujar la linea
+        //hasta el segundo punto recogido de la posicion del raton
+        if (puntos.size()==1&&getParametros()){
+            //pintar imagen original guardada en buffer
+            pintarBufferTemporalEnLienzo();
+            //dibujar linea
             Graphics2D g= lienzo.getBufferG2D();
             setParametrosDibujo(g);
-            g.setBackground(new Color(255, 255, 255, 0));
-            g.clearRect(0, 0, lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight());
-            
-            //dibujar bufferTemporal que tiene la imagen original
-            g.drawImage(tmpBuffer, 0, 0,null);
-            //dibujar linea
             g.drawLine(puntos.get(0).x, puntos.get(0).y, punto.x, punto.y);
             lienzo.repaint();
         }
       
     }
-
+ 
+    /**
+     * Al soltarse el raton se guarda el estado del lienzo en el buffer temporal.
+     * Y se limpia la lista de puntos haciendo que se desactive la referencia de dibujo
+     * 
+     * @param punto Punto en el que esta el raton
+     */
     @Override
-    public void mouseDragged(Point punto) {
-
-    }
-
-    @Override
-    public void mouseClicked(Point punto) {
+    public void mouseReleased(Point punto) {
         if(!getParametros())
             return;
-        Graphics2D g= lienzo.getBufferG2D();
-        setParametrosDibujo(g);
 
         //si es el primer punto almacenamos en el buffer temporal la imagen original
         if (puntosRestantes==puntosTotales){
-            tmpBuffer = new BufferedImage(lienzo.getBuffer().getWidth(),lienzo.getBuffer().getHeight(),BufferedImage.TYPE_INT_ARGB);
-            tmpBuffer.getGraphics().drawImage(lienzo.getBuffer(), 0, 0, null);
+            guardarLienzoEnBufferTemporal();
             puntos.clear();
         }
+        //agregamos un punto a la lista de puntos
         puntos.add(punto);
         puntosRestantes--;
         
-        //si ha sido el ultimo punto
+        //si ha sido el ultimo punto reseteamos el numero de puntos restantes
         if(puntosRestantes==0){
-            g.drawLine(puntos.get(0).x, puntos.get(0).y, puntos.get(1).x, puntos.get(1).y);
             puntosRestantes=puntosTotales;
-            lienzo.repaint();
         }
         actualizaTextoPuntos();
     }
 
+  
+
     /**
+     * Al activarse actualiza el texto informativo de puntos en la ventana principal
+     */
+    @Override
+    public void activar() {
+        actualizaTextoPuntos();
+    }
+
+    /**
+     * Al desactivarse limpia el texto informativo de puntos en la ventana principal
+     */
+    @Override
+    public void desactivar() {
+        vp.inputPuntosRestantes.setText("");
+        vp.textArea.setText("");
+    }
+    
+    
+  /**
      * Actualiza las cajas de texto de los puntos
      */
     private void actualizaTextoPuntos(){
-        vp.inputPuntosRestantes.setText(""+puntosRestantes);
+        vp.inputPuntosRestantes.setText(""+((puntosRestantes==puntosTotales)?0:puntosRestantes));
         String textoPuntos="";
         for (int i=0;i<puntos.size();i++) {
             textoPuntos+="Punto "+i+": ("+puntos.get(i).x+" , "+puntos.get(i).y+")\n";
         }
         vp.textArea.setText(textoPuntos);
     }
-    
-    @Override
-    public void mousePressed(Point punto) {
-    }
-
-    @Override
-    public void mouseReleased(Point punto) {
-
-    }
-
-  
-
-    @Override
-    public void activar() {
-        actualizaTextoPuntos();
-    }
-
-    @Override
-    public void desactivar() {
-        vp.inputPuntosRestantes.setText("");
-        vp.textArea.setText("");
-    }
-
- 
-
-   
-    
 }

@@ -6,40 +6,41 @@ Lista de paquetes:
  */
 package ud2_ejer2.gui.herramientas;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
- * Herramienta para dibujar rectangulo redondo. 
+ * Herramienta para dibujar texto. 
  * Su funcionameinto es:
  * -Al pulsarse el raton se guarda la imagen actual del lienzo en el buffer temporal y se lanza el dibujado
  * -Al arrastrase el ratón se redibuja el bufer temporal en el lienzo y se superpone 
- *  el dibujo del rectangulo redondo permitiendo ver de forma actualizada donde se va 
- *  a colocar el rectangulo redondo
+ *  el dibujo del texto permitiendo ver de forma actualizada donde se va a colocar 
  * 
  * @see Herramienta
  * @author Jose Javier BO
  */
-public class RectanguloRedondo extends Herramienta {
+public class Texto extends Herramienta {
 
     /**
-     * Ancho del arco de la esquina del rectangulo
+     * String a dibujar
      */
-    int anchoCirculo = 0;
+    String texto;
     
     /**
-     * Alto del arco de la esquina del rectangulo
+     * Fuente a utilizar (es calculada en el metodo getParametros())
      */
-    int altoCirculo = 0;
+    Font fuente;
+ 
 
      /**
      * Constructor
      * @param ventanaPrincipal Referencia a la ventana princiapl
      * @param lienzo Referencia al lienzo donde dibujar
      */
-    public RectanguloRedondo(VentanaPrincipal ventanaPrincipal, Lienzo lienzo) {
+    public Texto(VentanaPrincipal ventanaPrincipal, Lienzo lienzo) {
         super(ventanaPrincipal, lienzo);
     }
 
@@ -58,7 +59,7 @@ public class RectanguloRedondo extends Herramienta {
 
     
     /**
-     * Al pulsar el boton se guarda el lienzo en el buffer temporal y se dibuja el rectangulo
+     * Al pulsar el boton se guarda el lienzo en el buffer temporal y se dibuja el texto
      * @param punto posicion del raton
      */    
     @Override
@@ -73,7 +74,7 @@ public class RectanguloRedondo extends Herramienta {
     
     /**
      * Ejecuta el dibujado. Primero limpia el lienzo. Redibuja sobre el lo almacenado 
-     * en el buffer temporal y luego superpone el rectangulo redondo.
+     * en el buffer temporal y luego superpone el texto
      * 
      * @param punto posicion del raton
      */
@@ -83,19 +84,16 @@ public class RectanguloRedondo extends Herramienta {
 
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
-        //dibujar rectangulo
-        if (soloBorde) {
-            g.drawRoundRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto, anchoCirculo, altoCirculo);
-        } else {
-            g.fillRoundRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto, anchoCirculo, altoCirculo);
-        }
+        //dibujar texto
+        g.drawString(texto, punto.x, punto.y); 
+
         lienzo.repaint();
     }
 
     
     /**
      * Ademas de los parametros comunes de dibujado recoge tambien los parametros
-     * especificos del rectángulo redondeado
+     * especificos del texto(fuente, estilo tamaño, texto a escribir...)
      * @return True si los ha recogido, False si no los ha recogido
      */
     @Override
@@ -103,19 +101,53 @@ public class RectanguloRedondo extends Herramienta {
         if (!super.getParametros()) {
             return false;
         }
-        try {
-            anchoCirculo = Integer.parseInt(vp.inputRectRedAnchoCirculo.getText());
-        } catch (NumberFormatException ex) {
-            vp.msgError("Ancho de circulo no válido");
+        texto = vp.inputTexto.getText();
+        if (texto.length()<1){
+            vp.msgError("No se puede dejar el texto vacío");
             return false;
         }
-
+        int tamano =1;
         try {
-            altoCirculo = Integer.parseInt(vp.inputRectRedAltoCirculo.getText());
+            tamano = Integer.parseInt(vp.inputTextoTamano.getText());
+            if (tamano<1){
+                vp.msgError("El tamaño debe ser al menos 1");
+                return false;
+            }
         } catch (NumberFormatException ex) {
-            vp.msgError("Alto de circulo no válido");
+            vp.msgError("Tamaño de texto no válido");
             return false;
         }
+            
+        String estiloStr= vp.inputTextoEstilo.getSelectedItem().toString();
+        String nombreFuente= vp.inputTextoFuente.getSelectedItem().toString();
+        
+        int estilo;
+        switch (estiloStr) {
+            case "Italica" -> estilo=Font.ITALIC;
+            case "Negrita" -> estilo=Font.BOLD;
+            case "Italica y Negrita"-> estilo = Font.BOLD | Font.ITALIC;
+            default -> estilo=Font.PLAIN;
+        }
+        
+        /**
+         * Instanciar fuente
+         */
+        fuente = new Font(nombreFuente, estilo, tamano);
+        
+        
         return true;
     }
+
+    /**
+     * Ademas de estalbecer los parametros comunes etablece el tipo de letra
+     * @param g 
+     */
+    @Override
+    protected void setParametrosDibujo(Graphics2D g) {
+        super.setParametrosDibujo(g);
+        g.setFont(fuente);
+    }
+    
+    
+    
 }

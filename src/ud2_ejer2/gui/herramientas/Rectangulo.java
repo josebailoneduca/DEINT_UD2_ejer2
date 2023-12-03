@@ -6,87 +6,77 @@ Lista de paquetes:
  */
 package ud2_ejer2.gui.herramientas;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
- *
+ * Herramienta para dibujar rectangulo. 
+ * Su funcionameinto es:
+ * -Al pulsarse el raton se guarda la imagen actual del lienzo en el buffer temporal y se lanza el dibujado
+ * -Al arrastrase el ratón se redibuja el bufer temporal en el lienzo y se superpone el dibujo del rectangulo
+ *  permitiendo ver de forma actualizada donde se va a colocar el rectangulo
+ * 
+ * @see Herramienta
  * @author Jose Javier BO
  */
 public class Rectangulo extends Herramienta {
 
-    BufferedImage tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
-    public Rectangulo(VentanaPrincipal ventanaPrincipal) {
-        super(ventanaPrincipal);
+    /**
+     * Constructor
+     * @param ventanaPrincipal Referencia a la ventana princiapl
+     * @param lienzo Referencia al lienzo donde dibujar
+     */
+    public Rectangulo(VentanaPrincipal ventanaPrincipal ,Lienzo lienzo) {
+        super(ventanaPrincipal,lienzo);
     }
 
-    @Override
-    public void mouseMoved(Point punto) {
-    }
-
+     /**
+     * Al arrastrar se redibuja el buffer temporal en el lienzo y se superpone el rectangulo
+     * @param punto posicion del raton
+     */
     @Override
     public void mouseDragged(Point punto) {
-        //limpiar lienzo
-        Graphics2D g = lienzo.getBufferG2D();
-        setParametrosDibujo(g);
-        g.setBackground(new Color(255, 255, 255, 0));
-        g.clearRect(0, 0, lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight());
-
-        //dibujar bufferTemporal que tiene la imagen original
-        g.drawImage(tmpBuffer, 0, 0, null);
-
-        //dibujar rectangulo
-        if (soloBorde) {
-            g.drawRect(punto.x, punto.y, ancho, alto);
-        } else {
-            g.fillRect(punto.x, punto.y, ancho, alto);
-        }
-        lienzo.repaint();
+        if (!getParametros())
+            return;
+        
+        dibujar(punto);
     }
 
-    @Override
-    public void mouseClicked(Point punto) {
-
-    }
-
+    
+    /**
+     * Al pulsar el boton se guarda el lienzo en el buffer temporal y se dibuja el rectangulo
+     * @param punto posicion del raton
+     */
     @Override
     public void mousePressed(Point punto) {
         if (!getParametros()) {
             return;
         }
-        //guardar original en buffer temporal
+        guardarLienzoEnBufferTemporal();
+        dibujar(punto);
+    }
+
+    
+     /**
+     * Ejecuta el dibujado. Primero limpia el lienzo. Redibuja sobre el lo almacenado 
+     * en el buffer temporal y luego superpone el rectangulo.
+     * 
+     * @param punto posicion del raton
+     */
+    private void dibujar(Point punto) {
+        pintarBufferTemporalEnLienzo();
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
-        tmpBuffer = new BufferedImage(lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight(), BufferedImage.TYPE_INT_ARGB);
-        tmpBuffer.getGraphics().drawImage(lienzo.getBuffer(), 0, 0, null);
-
         //dibujar rectangulo
         if (soloBorde) {
-            g.drawRect(punto.x, punto.y, ancho, alto);
+            g.drawRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto);
         } else {
-            g.fillRect(punto.x, punto.y, ancho, alto);
+            g.fillRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto);
         }
-        lienzo.repaint();
-    }
-
-    @Override
-    public void mouseReleased(Point punto) {
-
-    }
-
-    @Override
-    public void activar() {
-
-    }
-
-    @Override
-    public void desactivar() {
-
-    }
+        lienzo.repaint();    }
+ 
 
 }

@@ -516,6 +516,7 @@
                           <ComponentRef name="buttonGroupHerramientas"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Polil&#xed;nea"/>
+                        <Property name="actionCommand" type="java.lang.String" value="polilinea"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="lbnpuntos">
@@ -610,6 +611,7 @@
                           <ComponentRef name="buttonGroupHerramientas"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Texto"/>
+                        <Property name="actionCommand" type="java.lang.String" value="texto"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="lbTamano">
@@ -643,7 +645,7 @@
                         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                           <StringArray count="4">
                             <StringItem index="0" value="Normal"/>
-                            <StringItem index="1" value="It&#xe1;lica"/>
+                            <StringItem index="1" value="Italica"/>
                             <StringItem index="2" value="Negrita"/>
                             <StringItem index="3" value="Italica y Negrita"/>
                           </StringArray>
@@ -662,11 +664,14 @@
                     <Component class="javax.swing.JComboBox" name="inputTextoFuente">
                       <Properties>
                         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                          <StringArray count="4">
-                            <StringItem index="0" value="Normal"/>
-                            <StringItem index="1" value="It&#xe1;lica"/>
-                            <StringItem index="2" value="Negrita"/>
-                            <StringItem index="3" value="Italica y Negrita"/>
+                          <StringArray count="7">
+                            <StringItem index="0" value="Arial"/>
+                            <StringItem index="1" value="Calibri"/>
+                            <StringItem index="2" value="Comic Sans MS"/>
+                            <StringItem index="3" value="Courier New"/>
+                            <StringItem index="4" value="Impact"/>
+                            <StringItem index="5" value="MS Gothic"/>
+                            <StringItem index="6" value="Times New Roman"/>
                           </StringArray>
                         </Property>
                       </Properties>
@@ -1090,7 +1095,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="625" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
