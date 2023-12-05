@@ -71,6 +71,18 @@ public class Linea extends Herramienta {
         }
       
     }
+
+    /**
+     * Hace lo que moved
+     * @param punto El punto en 
+     */
+    @Override
+    public void mouseDragged(Point punto) {
+        mouseMoved(punto);
+    }
+    
+    
+    
  
     /**
      * Al soltarse el raton se guarda el estado del lienzo en el buffer temporal.
