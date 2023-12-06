@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.logica.herramientas;
+package ud2_ejer2.gui.herramientas;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;

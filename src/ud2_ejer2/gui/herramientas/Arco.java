@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.logica.herramientas;
+package ud2_ejer2.gui.herramientas;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,18 +13,21 @@ import ud2_ejer2.gui.componentes.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
- * Herramienta para dibujar arco. 
- * Su funcionameinto es:
- * -Al pulsarse el raton se guarda la imagen actual del lienzo en el buffer temporal y se lanza el dibujado
- * -Al arrastrase el ratón se redibuja el bufer temporal en el lienzo y se superpone el dibujo del arco
- *  permitiendo ver de forma actualizada donde se va a colocar el arco
+ * Herramienta para dibujar arco. Su funcionameinto es: -Al pulsarse el raton se
+ * guarda la imagen actual del lienzo en el buffer temporal y se lanza el
+ * dibujado -Al arrastrase el ratón se redibuja el bufer temporal en el lienzo y
+ * se superpone el dibujo del arco permitiendo ver de forma actualizada donde se
+ * va a colocar el arco
  *
  * @see Herramienta
  * @author Jose Javier BO
  */
 public class Arco extends Herramienta {
 
-
+    /**
+     * Define si se esta dibujando o no
+     */
+    boolean dibujando = false;
     /**
      * Angulo inicial del arco
      */
@@ -34,9 +37,9 @@ public class Arco extends Herramienta {
      * Grados que abarca el angulo
      */
     int angulo = 0;
-    
+
     int cierre = Arc2D.OPEN;
-     
+
     /**
      * Constructor
      *
@@ -44,12 +47,13 @@ public class Arco extends Herramienta {
      * coger los parametros
      * @param lienzo Referencia al lienzo de dibujo
      */
-    public Arco(VentanaPrincipal ventanaPrincipal,Lienzo lienzo) {
-        super(ventanaPrincipal,lienzo);
+    public Arco(VentanaPrincipal ventanaPrincipal, Lienzo lienzo) {
+        super(ventanaPrincipal, lienzo);
     }
 
     /**
      * Al arrastrar se lanza el dibujado
+     *
      * @param punto posicion del raton
      */
     @Override
@@ -58,9 +62,10 @@ public class Arco extends Herramienta {
         dibujar(punto);
     }
 
-    
     /**
-     * Al pulsar se guarda en el buffer el dibujo original y se lanza el dibujado del arco
+     * Al pulsar se guarda en el buffer el dibujo original y se lanza el
+     * dibujado del arco
+     *
      * @param punto Punto con las coordenadas a usara en el dibujo
      */
     @Override
@@ -69,42 +74,56 @@ public class Arco extends Herramienta {
         if (!getParametros()) {
             return;
         }
-      
+        dibujando=true;
         //guardar la imagen original en el buffer
         guardarLienzoEnBufferTemporal();
         //digujar el arco
         dibujar(punto);
     }
 
-
+    /**
+     * Al soltar el boton se marca que no se esta dibujando
+     *
+     * @param punto
+     */
+    @Override
+    public void mouseReleased(Point punto) {
+        dibujando = false;
+    }
 
     /**
-     * Dibuja el elemento limpiando el lienzo, redibujando la imagen original y luego dibujando el arco
+     * Dibuja el elemento limpiando el lienzo, redibujando la imagen original y
+     * luego dibujando el arco
+     *
      * @param punto Coordenadas para el dibujo
      */
     private void dibujar(Point punto) {
-         // Actualizar los parametros de dibujado
+        
+        if (!dibujando) {
+            return;
+        }
+
+        // Actualizar los parametros de dibujado
         if (!getParametros()) {
             return;
         }
-        
+
         //definir punto degradado en rectangulo que ocupa
-        x1=punto.x-ancho/2;
-        y1=punto.y-alto/2;
-        x2=x1+ancho;
-        y2=y1+alto;
-        
-        
+        x1 = punto.x - ancho / 2;
+        y1 = punto.y - alto / 2;
+        x2 = x1 + ancho;
+        y2 = y1 + alto;
+
         //limpiar lienzo
         Graphics2D g = lienzo.getBufferG2D();
         //Refrescar los parametros de dibujo en g
         setParametrosDibujo(g);
-        
+
         //pintar la imagen original
         pintarBufferTemporalEnLienzo();
-      
+
         //dibujar angulo
-        Arc2D arco = new Arc2D.Double(x1, y1, ancho, alto, inicio, angulo,cierre);
+        Arc2D arco = new Arc2D.Double(x1, y1, ancho, alto, inicio, angulo, cierre);
         if (soloBorde) {
             g.draw(arco);
         } else {
@@ -112,11 +131,13 @@ public class Arco extends Herramienta {
         }
         lienzo.repaint();
     }
-    
-    
+
     /**
-     * Ademas de recoger los parametros comunes recoge los parametros especificos del arco
-     * @return True si se han podido coger los parametros. False si ha habido algun error
+     * Ademas de recoger los parametros comunes recoge los parametros
+     * especificos del arco
+     *
+     * @return True si se han podido coger los parametros. False si ha habido
+     * algun error
      */
     @Override
     protected boolean getParametros() {
@@ -136,12 +157,15 @@ public class Arco extends Herramienta {
             vp.msgError("Angulo del arco no válido");
             return false;
         }
-        switch(vp.inputArcoCierre.getSelectedIndex()){
-            case 0 -> cierre=Arc2D.OPEN;
-            case 1 -> cierre=Arc2D.CHORD;
-            case 2 -> cierre=Arc2D.PIE;
-    }
-        
+        switch (vp.inputArcoCierre.getSelectedIndex()) {
+            case 0 ->
+                cierre = Arc2D.OPEN;
+            case 1 ->
+                cierre = Arc2D.CHORD;
+            case 2 ->
+                cierre = Arc2D.PIE;
+        }
+
         return true;
     }
 }

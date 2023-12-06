@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.logica.herramientas;
+package ud2_ejer2.gui.herramientas;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -24,6 +24,13 @@ import ud2_ejer2.gui.ventanas.VentanaPrincipal;
  */
 public class RectanguloRedondo extends Herramienta {
 
+    
+    
+    /**
+     * Define si se esta dibujando o no
+     */
+    boolean dibujando=false;
+    
     /**
      * Ancho del arco de la esquina del rectangulo
      */
@@ -66,11 +73,21 @@ public class RectanguloRedondo extends Herramienta {
         if (!getParametros()) {
             return;
         }
+        dibujando=true;
         guardarLienzoEnBufferTemporal();
         dibujar(punto);
     }
 
     
+        /**
+     * Al soltar el boton se marca que no se esta dibujando
+     * @param punto 
+     */
+    @Override
+    public void mouseReleased(Point punto) {
+        dibujando=false;
+    }
+
     /**
      * Ejecuta el dibujado. Primero limpia el lienzo. Redibuja sobre el lo almacenado 
      * en el buffer temporal y luego superpone el rectangulo redondo.
@@ -78,6 +95,9 @@ public class RectanguloRedondo extends Herramienta {
      * @param punto posicion del raton
      */
     private void dibujar(Point punto) {
+        
+        if (!dibujando)
+            return;
         
         //coordenadas para el gradiente
         x1=punto.x-ancho/2;

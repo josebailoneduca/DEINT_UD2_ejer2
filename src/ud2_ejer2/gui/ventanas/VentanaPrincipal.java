@@ -12,8 +12,6 @@ import ud2_ejer2.gui.listeners.ListenerRbHerramientas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -26,8 +24,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import ud2_ejer2.logica.GestorTexturas;
-import ud2_ejer2.logica.herramientas.DibujoLibre;
-import ud2_ejer2.logica.herramientas.Herramienta;
+import ud2_ejer2.gui.herramientas.DibujoLibre;
+import ud2_ejer2.gui.herramientas.Herramienta;
 
 /**
  * Clase central del ejercicio UI2_2
@@ -35,18 +33,35 @@ import ud2_ejer2.logica.herramientas.Herramienta;
  * Ademas de mostrar la interfaz grafica se encarga de almacenar el estado
  * respecto a qué herramienta de dibujo es la activa y qué valores de dibujado
  * deben usarse (color, grosor, tamaños, degradados, texturas...)
- *
- *
- *
+ * 
+ * @see Lienzo
+ * @see ListenerRaton
+ * @see ListenerRbHerramientas
+ * @see Herramienta
+ * @see GestorTexturas
  * @author Jose Javier BO
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
 
+    /**
+     * Herramienta activa.
+     */
     private Herramienta herramientaActual;
+    
+    /**
+     * Tipos de punteados de trazos
+     */
     public float[][] estilosLineas = {{1, 0}, {15, 10}, {20, 10, 20, 40}, {15, 10, 2.5f, 10}};
+    
+    /**
+     * Gestor de texturas.
+     */
     private GestorTexturas gestorTextura = new GestorTexturas();
 
-    public BufferedImage textura;
+    /**
+     * Imagen para usar para la textura
+     */
+    public BufferedImage texturaActual;
 
     /**
      * Constructor. Inicia los componentes de la GUI, asigna el listener para
@@ -71,7 +86,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     /**
      * Inicializa y asigna los listner de ratón sobre el lienzo y el
-     * Actionlistener de radiobutton de herramientas
+     * Actionlistener de radiobutton de herramientas a los radiobuttons de herramienta
      */
     private void initEventos() {
         //eventos de lienzo
@@ -135,7 +150,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     /**
-     * Pone los valores por defecto en las interfaz gráfica
+     * Pone los valores por defecto en la interfaz gráfica
      */
     public void resetValores() {
         inputRectRedAnchoCirculo.setText("20");
@@ -152,8 +167,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     /**
-     * Agrega el valor recibido al grosor de trazo actual. Tiene una limitación
-     * inferior de 1
+     * Modifica el grosor agregando el valor recibido al grosor de trazo actual. 
+     * Tiene una limitación inferior de 1
      *
      * @param i El valor a agregar. Negativo para reducir el trazo y positivo
      * para aumentarlo
@@ -170,11 +185,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     /**
-     * Agrega el valor recibido a la fase de trazo actual. Tiene una limitación
-     * inferior de 0
+     * Modifica la fase de trazo. Agrega el valor recibido a la fase de trazo actual. 
+     * Tiene una limitación inferior de 0
      *
-     * @param i El valor a agregar. Negativo para reducir el trazo y positivo
-     * para aumentarlo
+     * @param i El valor a agregar. Negativo para reducir la fase y positivo
+     * para aumentarla
      */
     public void cambiarFaseTrazo(int i) {
         try {
@@ -188,7 +203,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     
     /**
-     * Selecciona la textura a usar
+     * Selecciona la textura a usar a partir de un indice. Si el indice es 0 lanza
+     * el cargador de textura desde archivo. Si es una textura existente carga su vista previa
+     * y pone la textura como textura actual
      * @param i Indice de la textura. 0 para lanzar la carga desde archivo.
      */
     private void seleccionarTextura(int i) {
@@ -201,14 +218,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             ArrayList<String> listaTexturas = gestorTextura.getNombresTexturas();
             inputTextura.setModel(new DefaultComboBoxModel<String>(gestorTextura.getNombresTexturas().toArray(new String[0])));
             inputTextura.setSelectedIndex(i);
-            textura = gestorTextura.getTextura(i);
+            texturaActual = gestorTextura.getTextura(i);
         }
 
     }
 
+    /**
+     * Lanza el cargado de una textura desde disco. abre un JFileChooser
+     * Si el usuario elige un archivo le pasa la ruta al gestor de texturas
+     * para que la cargue. si consige cargarla la selecciona.
+     */
     private void cargarTextura() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File("./src/imagenes"));
+        fileChooser.setCurrentDirectory(new File("./src/ud2_ejer2/imagenes"));
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de imagen", "jpg", "png", "gif", "jpeg");
 
         fileChooser.setFileFilter(filter);
@@ -671,11 +693,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         rbColor.setText("Color plano");
         rbColor.setToolTipText("Pintar de color plano");
         rbColor.setActionCommand("color");
-        rbColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbColorActionPerformed(evt);
-            }
-        });
 
         panelColorSeleccionado.setBackground(new java.awt.Color(0, 0, 0));
         panelColorSeleccionado.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -1087,18 +1104,30 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         setHerramienta(herramientaActual.getClass());
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
+    /**
+     * Abrir selector de color para el tercer color de gradiente
+     * @param evt 
+     */
     private void panelGradColor3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor3MouseClicked
         Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor3.getBackground());
         if (colorSeleccionado != null)
             panelGradColor3.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelGradColor3MouseClicked
 
+    /**
+     * Abrir selector de color para segundo color de gradiente
+     * @param evt 
+     */
     private void panelGradColor2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor2MouseClicked
         Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor2.getBackground());
         if (colorSeleccionado != null)
             panelGradColor2.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelGradColor2MouseClicked
 
+    /**
+     * Abrir selector de color para tercer color de gradiente
+     * @param evt 
+     */
     private void panelGradColor1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor1MouseClicked
         Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor1.getBackground());
         if (colorSeleccionado != null)
@@ -1106,7 +1135,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_panelGradColor1MouseClicked
 
     /**
-     * Abre el selector de color
+     * Abre el selector de color para el color plano
      *
      * @param evt
      */
@@ -1116,10 +1145,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             panelColorSeleccionado.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelColorSeleccionadoMouseClicked
 
-    private void rbColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbColorActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rbColorActionPerformed
-
+    /**
+     * Escucha del cambio en el combobox de seleccion de textura
+     * @param evt 
+     */
     private void inputTexturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputTexturaActionPerformed
         seleccionarTextura(inputTextura.getSelectedIndex());
     }//GEN-LAST:event_inputTexturaActionPerformed

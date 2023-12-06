@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.logica.herramientas;
+package ud2_ejer2.gui.herramientas;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +17,7 @@ import ud2_ejer2.gui.ventanas.VentanaPrincipal;
  * Controla la herramienta de dibujado libre
  * Su funcionamiento es:
  * - Al entrar el raton sobre el lienzo se guarda en el buffer temporal el dibujo actual del lienzo
- * - Al moverse el raton se dibuja en el lienzo lo que hay en el buffer mas una circunferencia de referencia donde esta el raton
+ * - Al moverse el raton se dibuja en el lienzo lo que hay en el buffer mas una circunferencia de referencia del grosor de trazo
  * - Al hacerse click se dibuja un óvalo en el lienzo  y se guarda el resultado en el buffer (permitiendo hacer puntos)
  * - En el mousepressed se guarda la posición de donde esta el raton y cuango se hace 
  *    un mousedrag se pinta en el lienzo lo que hay en el buffertemporal y una linea desde la posición anterior a la nueva

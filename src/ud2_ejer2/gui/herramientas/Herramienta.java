@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.logica.herramientas;
+package ud2_ejer2.gui.herramientas;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -48,9 +48,17 @@ abstract public class Herramienta {
 
     /**
      * Imagen en memoria para usarse como buffer temporal si la herramienta lo
-     * necesita
+     * necesita. El uso de este buffer es para almacenar cual era la imagen original
+     * al inicio del uso de la herramienta y en los dibujados recuperar la imagen 
+     * original mas el estado altual de la herramienta permitiendo cambiar el dibjo
+     * de manera interactiva. Por ejemplo una herramienta de línea que quiera refrescar
+     * la posicion de la linea conforme se mueve el ratón guardaría la imagen original 
+     * en este buffer y cada vez que se mueve el ratón pinta la imagen original mas
+     * la posicion de la linea ne ese momento. Cuando se termina de pintar la linea
+     * el resultado es permanente pero mientras se esta pintando se puede ver como va
+     * quedando la linea segun se mueve el raton.
      */
-    BufferedImage tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage tmpBuffer;
 
     //parametros generales
     public static final int LINEAL = 0;
@@ -135,7 +143,7 @@ abstract public class Herramienta {
         colorGradiente1 = vp.panelGradColor1.getBackground();
         colorGradiente2 = vp.panelGradColor2.getBackground();
         colorGradiente3 = vp.panelGradColor3.getBackground();
-        imgTextura = vp.textura;
+        imgTextura = vp.texturaActual;
         
         //trazo
         try {
@@ -197,6 +205,8 @@ abstract public class Herramienta {
      * Dibuja el contenido del buffer temporal en el lienzo
      */
     public void pintarBufferTemporalEnLienzo() {
+        if (tmpBuffer==null)
+            guardarLienzoEnBufferTemporal();
         Graphics2D g = lienzo.getBufferG2D();
         //limpiar lienzo
         g.setBackground(new Color(255, 255, 255, 0));
@@ -253,7 +263,7 @@ abstract public class Herramienta {
         if (gy1 == gy2) {
             gy2++;
         }
-        //Asegurar menor xy1   y mayor xy2 para radial
+        //Asegurar menor xy1   y mayor xy2 para gradiente radial
         if (tipoGradiente == RADIAL) {
             if (gx1 > gx2) {
                 int aux = gx1;

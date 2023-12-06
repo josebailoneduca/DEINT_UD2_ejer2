@@ -47,7 +47,7 @@ public class Lienzo extends javax.swing.JPanel {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                    ((Lienzo)e.getComponent()).actualizaBufferedImage();
+                    ((Lienzo)e.getComponent()).actualizaDimensionesBuffer();
               }
         });
 
@@ -57,7 +57,7 @@ public class Lienzo extends javax.swing.JPanel {
      * Actualiza el buffer al tamaño superior, bien sea el actual del panel o el 
      * que ya tiene el buffer
      */
-    public void actualizaBufferedImage(){
+    public void actualizaDimensionesBuffer(){
  
         //si el panel no es mas grande que el buffer volvemos
         if (this.getWidth()<=buffer.getWidth()&&this.getHeight()<=buffer.getHeight())

@@ -997,9 +997,6 @@
                         <Property name="toolTipText" type="java.lang.String" value="Pintar de color plano"/>
                         <Property name="actionCommand" type="java.lang.String" value="color"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rbColorActionPerformed"/>
-                      </Events>
                     </Component>
                     <Container class="javax.swing.JPanel" name="panelColorSeleccionado">
                       <Properties>
