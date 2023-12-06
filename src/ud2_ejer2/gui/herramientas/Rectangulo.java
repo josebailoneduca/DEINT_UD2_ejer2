@@ -79,7 +79,7 @@ public class Rectangulo extends Herramienta {
         x2=x1+ancho;
         y2=y1+alto;
         
-        //dibujado real
+        //pintar original
         pintarBufferTemporalEnLienzo();
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);

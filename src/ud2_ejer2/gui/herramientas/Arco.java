@@ -102,8 +102,9 @@ public class Arco extends Herramienta {
         
         //pintar la imagen original
         pintarBufferTemporalEnLienzo();
-        Arc2D arco = new Arc2D.Double(x1, y1, ancho, alto, inicio, angulo,cierre);
+      
         //dibujar angulo
+        Arc2D arco = new Arc2D.Double(x1, y1, ancho, alto, inicio, angulo,cierre);
         if (soloBorde) {
             g.draw(arco);
         } else {

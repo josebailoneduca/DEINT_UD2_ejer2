@@ -70,9 +70,6 @@ public class Poligono extends Herramienta {
             //pintar imagen original del buffer
             pintarBufferTemporalEnLienzo();
 
-            //dibujar poligono
-            Graphics2D g = lienzo.getBufferG2D();
-            setParametrosDibujo(g);
 
             //preparar arrays de coordenadas
             int[] px = new int[puntos.size() + 1];
@@ -83,6 +80,29 @@ public class Poligono extends Herramienta {
             }
             px[puntos.size()] = punto.x;
             py[puntos.size()] = punto.y;
+            
+            
+            //actualizar puntos gradiente
+            x1=px[0];
+            y1=py[0];
+            x2=px[1];
+            y2=py[1];
+            //coger coordenadas mas extremas para el gradiente
+            for (int i=0;i<px.length;i++){
+            if (px[i]<x1)
+                x1=px[i];
+            if (px[i]>x2)
+                x2=px[i];
+            if (py[i]<y1)
+                y1=py[i];
+            if (py[i]>y2)
+                y2=py[i];
+            }
+            
+            
+            //dibujar poligono
+            Graphics2D g = lienzo.getBufferG2D();
+            setParametrosDibujo(g);
             
             //ajustar borde
             if (!soloBorde ) {

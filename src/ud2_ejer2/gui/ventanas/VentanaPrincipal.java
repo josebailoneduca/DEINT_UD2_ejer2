@@ -32,9 +32,9 @@ import ud2_ejer2.gui.herramientas.Herramienta;
 public class VentanaPrincipal extends javax.swing.JFrame {
 
     public Herramienta herramientaActual;
-    
-    public  float[][]estilosLineas={{1,0},{15,10},{20,10,20,40},{15,10,2.5f,10}};
-    
+
+    public float[][] estilosLineas = {{1, 0}, {15, 10}, {20, 10, 20, 40}, {15, 10, 2.5f, 10}};
+
     /**
      * Constructor. Inicia los componentes de la GUI, asigna el listener para
      * escuchar los clicks en los radiobuttons de herramientas y la escucha de
@@ -51,7 +51,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      *
      * - Las herramientas durante su actividad recogen los datos de
      * configuracion para dibujar de los componentes de GUI de esta clase.
-     * Ademas algunas actualizan información de algunos componentes.
+     * Ademas algunas herramientas actualizan información de algunos componentes
+     * de la interfaz como los puntos restantes o los puntos dibujados que aparecen
+     * en la seeción inferior derecha de Lista de puntos
      *
      *
      * @see Lienzo
@@ -142,10 +144,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     /**
-     * Agrega el valor recibido al grosor de trazo actual. Tiene una limitación inferior
-     * de 1
-     * 
-     * @param i El valor a agregar. Negativo para reducir el trazo y positivo para aumentarlo
+     * Agrega el valor recibido al grosor de trazo actual. Tiene una limitación
+     * inferior de 1
+     *
+     * @param i El valor a agregar. Negativo para reducir el trazo y positivo
+     * para aumentarlo
      */
     void cambiaGrosorTrazo(int i) {
         try {
@@ -231,20 +234,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         inputComunEstiloLinea = new javax.swing.JComboBox<>();
         panelTipoRelleno = new javax.swing.JPanel();
         rbColor = new javax.swing.JRadioButton();
-        lbColor = new javax.swing.JLabel();
         panelColorSeleccionado = new javax.swing.JPanel();
         rbTextura = new javax.swing.JRadioButton();
-        lbTex = new javax.swing.JLabel();
         inputTextura = new javax.swing.JComboBox<>();
         panelTextura = new javax.swing.JPanel();
         rbGradiente = new javax.swing.JRadioButton();
-        lbGradiente = new javax.swing.JLabel();
         inputTipoGradiente = new javax.swing.JComboBox<>();
         panelGradColor1 = new javax.swing.JPanel();
         panelGradColor2 = new javax.swing.JPanel();
         panelGradColor3 = new javax.swing.JPanel();
         lbGrosor1 = new javax.swing.JLabel();
-        inputComunEstiloLineaFase = new javax.swing.JSlider();
+        inputComunEstiloLineaFase = new javax.swing.JSpinner();
         panelCoordenadas = new javax.swing.JPanel();
         lbRaton = new javax.swing.JLabel();
         lbX = new javax.swing.JLabel();
@@ -571,7 +571,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         inputComunGrosor.setToolTipText("Grosor del trazo");
 
         lbComunTamano.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lbComunTamano.setText("Tamaño");
+        lbComunTamano.setText("Tamaño de la figura");
 
         lbComunAncho.setText("Ancho:");
 
@@ -596,15 +596,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         inputComunEstiloLinea.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Contínuo", "-----------", "--   --   --", "- . - . - . - " }));
         inputComunEstiloLinea.setToolTipText("Tipo de trazo");
 
-        panelTipoRelleno.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        panelTipoRelleno.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Pintura", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupPintura.add(rbColor);
         rbColor.setSelected(true);
+        rbColor.setText("Color");
         rbColor.setToolTipText("Pintar de color plano");
         rbColor.setActionCommand("color");
-
-        lbColor.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lbColor.setText("Color");
+        rbColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbColorActionPerformed(evt);
+            }
+        });
 
         panelColorSeleccionado.setBackground(new java.awt.Color(0, 0, 0));
         panelColorSeleccionado.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -627,11 +630,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
 
         buttonGroupPintura.add(rbTextura);
+        rbTextura.setText("Textura");
         rbTextura.setToolTipText("Pintar con textura");
         rbTextura.setActionCommand("textura");
-
-        lbTex.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lbTex.setText("Textura");
 
         inputTextura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cuadros", "Puntos", "Archivo" }));
         inputTextura.setToolTipText("Tipo de textura");
@@ -657,11 +658,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
 
         buttonGroupPintura.add(rbGradiente);
+        rbGradiente.setText("Gradient.");
         rbGradiente.setToolTipText("Pintar con degradado");
         rbGradiente.setActionCommand("gradiente");
-
-        lbGradiente.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lbGradiente.setText("Gradien.");
 
         inputTipoGradiente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lineal", "Radial" }));
 
@@ -735,33 +734,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addGroup(panelTipoRellenoLayout.createSequentialGroup()
                         .addComponent(rbColor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbColor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelColorSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(rbTextura)
-                        .addGap(0, 0, 0)
-                        .addComponent(lbTex))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rbTextura))
                     .addGroup(panelTipoRellenoLayout.createSequentialGroup()
                         .addComponent(rbGradiente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbGradiente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(inputTipoGradiente, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(inputTipoGradiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelTipoRellenoLayout.createSequentialGroup()
                         .addComponent(panelGradColor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(panelGradColor2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(panelGradColor3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelTipoRellenoLayout.createSequentialGroup()
                         .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(panelTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelTipoRellenoLayout.setVerticalGroup(
             panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -770,20 +762,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(panelColorSeleccionado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lbColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rbTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lbTex, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(inputTextura, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE))
+                            .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(rbTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addComponent(panelTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(rbColor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(rbGradiente)
                     .addComponent(panelGradColor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbGradiente)
-                        .addComponent(inputTipoGradiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(inputTipoGradiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelGradColor2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelGradColor3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -792,8 +780,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         lbGrosor1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lbGrosor1.setText("Trazo");
 
-        inputComunEstiloLineaFase.setToolTipText("Fase del trazo");
-        inputComunEstiloLineaFase.setValue(0);
+        inputComunEstiloLineaFase.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        inputComunEstiloLineaFase.setToolTipText("Fase del tipo de trazo");
 
         javax.swing.GroupLayout panOpcionescomunesLayout = new javax.swing.GroupLayout(panOpcionescomunes);
         panOpcionescomunes.setLayout(panOpcionescomunesLayout);
@@ -802,27 +790,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(panOpcionescomunesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelTipoRelleno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(panOpcionescomunesLayout.createSequentialGroup()
-                        .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panOpcionescomunesLayout.createSequentialGroup()
-                                .addComponent(lbComunRelleno)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(rbSoloBorde)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(panOpcionescomunesLayout.createSequentialGroup()
-                                .addComponent(lbComunTamano)
-                                .addGap(18, 18, 18)
-                                .addComponent(lbComunAncho)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(inputComunAncho, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panOpcionescomunesLayout.createSequentialGroup()
-                                .addComponent(lbComunAlto)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(inputComunAlto, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(rbComunrelleno)))
+                    .addComponent(panelTipoRelleno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panOpcionescomunesLayout.createSequentialGroup()
                         .addComponent(lbGrosor1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -832,9 +800,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(inputComunEstiloLinea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(inputComunEstiloLineaFase, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(inputComunEstiloLineaFase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panOpcionescomunesLayout.createSequentialGroup()
+                        .addComponent(lbComunRelleno)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rbSoloBorde)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(rbComunrelleno))
+                    .addGroup(panOpcionescomunesLayout.createSequentialGroup()
+                        .addComponent(lbComunTamano)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lbComunAncho)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inputComunAncho, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbComunAlto)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inputComunAlto, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panOpcionescomunesLayout.setVerticalGroup(
             panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -850,16 +833,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addComponent(inputComunEstiloLineaFase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbComunRelleno)
+                    .addComponent(rbSoloBorde)
+                    .addComponent(rbComunrelleno))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbComunTamano)
                     .addComponent(lbComunAncho)
                     .addComponent(inputComunAncho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbComunAlto)
                     .addComponent(inputComunAlto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbComunRelleno)
-                    .addComponent(rbSoloBorde)
-                    .addComponent(rbComunrelleno))
                 .addContainerGap())
         );
 
@@ -908,7 +891,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGap(8, 8, 8))
         );
 
-        panelListaPuntos.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Lista Puntos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
+        panelListaPuntos.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Lista de Puntos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
 
         lbPuntosRestantes.setText("Puntos restantes:");
 
@@ -962,8 +945,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addComponent(panTipoGrafico, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panGeneralHerramientasLayout.createSequentialGroup()
                         .addGroup(panGeneralHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(panelCoordenadas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panOpcionescomunes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(panOpcionescomunes, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelCoordenadas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelListaPuntos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -994,7 +977,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         lienzo.setLayout(lienzoLayout);
         lienzoLayout.setHorizontalGroup(
             lienzoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 548, Short.MAX_VALUE)
+            .addGap(0, 511, Short.MAX_VALUE)
         );
         lienzoLayout.setVerticalGroup(
             lienzoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1040,15 +1023,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void panelGradColor3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor3MouseClicked
-        // TODO add your handling code here:
+        Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor3.getBackground());
+        if (colorSeleccionado != null)
+            panelGradColor3.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelGradColor3MouseClicked
 
     private void panelGradColor2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor2MouseClicked
-        // TODO add your handling code here:
+        Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor2.getBackground());
+        if (colorSeleccionado != null)
+            panelGradColor2.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelGradColor2MouseClicked
 
     private void panelGradColor1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelGradColor1MouseClicked
-        // TODO add your handling code here:
+        Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelGradColor1.getBackground());
+        if (colorSeleccionado != null)
+            panelGradColor1.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelGradColor1MouseClicked
 
     /**
@@ -1059,12 +1048,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void panelColorSeleccionadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelColorSeleccionadoMouseClicked
         Color colorSeleccionado = JColorChooser.showDialog(this, "Seleccione un color", panelColorSeleccionado.getBackground());
         if (colorSeleccionado != null)
-        panelColorSeleccionado.setBackground(colorSeleccionado);
+            panelColorSeleccionado.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelColorSeleccionadoMouseClicked
 
     private void panelTexturaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelTexturaMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_panelTexturaMouseClicked
+
+    private void rbColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbColorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rbColorActionPerformed
 
 // <editor-fold defaultstate="collapsed" desc="Variables generadas"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1078,7 +1071,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public javax.swing.JTextField inputComunAlto;
     public javax.swing.JTextField inputComunAncho;
     public javax.swing.JComboBox<String> inputComunEstiloLinea;
-    public javax.swing.JSlider inputComunEstiloLineaFase;
+    public javax.swing.JSpinner inputComunEstiloLineaFase;
     public javax.swing.JTextField inputComunGrosor;
     public javax.swing.JTextField inputPoligonoNumPuntos;
     public javax.swing.JTextField inputPolilineaNumPuntos;
@@ -1096,14 +1089,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lbAnchoCirculo;
     private javax.swing.JLabel lbAngulo;
     private javax.swing.JLabel lbCierre;
-    private javax.swing.JLabel lbColor;
     private javax.swing.JLabel lbComunAlto;
     private javax.swing.JLabel lbComunAncho;
     private javax.swing.JLabel lbComunRelleno;
     private javax.swing.JLabel lbComunTamano;
     private javax.swing.JLabel lbEstilo;
     private javax.swing.JLabel lbFuente;
-    private javax.swing.JLabel lbGradiente;
     private javax.swing.JLabel lbGrosor;
     private javax.swing.JLabel lbGrosor1;
     private javax.swing.JLabel lbInicio;
@@ -1111,7 +1102,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lbPuntosRestantes;
     private javax.swing.JLabel lbRaton;
     private javax.swing.JLabel lbTamano;
-    private javax.swing.JLabel lbTex;
     private javax.swing.JLabel lbX;
     private javax.swing.JLabel lbY;
     private javax.swing.JLabel lbnpuntos;

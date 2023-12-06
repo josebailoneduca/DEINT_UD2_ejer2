@@ -69,10 +69,6 @@ public class Polilinea extends Herramienta {
         //si ya se ha marcado algun punto dibujamos lo que ya hay
         if (puntosRestantes<puntosTotales && getParametros()) {
             pintarBufferTemporalEnLienzo();
-            //limpiar lienzo
-            Graphics2D g = lienzo.getBufferG2D();
-            setParametrosDibujo(g);
-
             //preparar arrays
             int[] px = new int[puntos.size() + 1];
             int[] py = new int[puntos.size() + 1];
@@ -83,7 +79,26 @@ public class Polilinea extends Herramienta {
             px[puntos.size()] = punto.x;
             py[puntos.size()] = punto.y;
 
-            //dibujar
+            //actualizar puntos gradiente
+            x1=px[0];
+            y1=py[0];
+            x2=px[1];
+            y2=py[1];
+            //coger coordenadas mas extremas para el gradiente
+            for (int i=0;i<px.length;i++){
+            if (px[i]<x1)
+                x1=px[i];
+            if (px[i]>x2)
+                x2=px[i];
+            if (py[i]<y1)
+                y1=py[i];
+            if (py[i]>y2)
+                y2=py[i];
+            }
+            
+            //Pintar polilinea
+            Graphics2D g = lienzo.getBufferG2D();
+            setParametrosDibujo(g);
             g.drawPolyline(px, py, puntos.size() + 1);
             lienzo.repaint();
 

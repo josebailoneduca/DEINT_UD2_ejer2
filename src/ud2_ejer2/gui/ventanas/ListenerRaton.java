@@ -110,8 +110,15 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        
+        if (e.isControlDown()){
+        //enviar informacion de rueda del raton para cambiar la fase del trazo
+        vp.cambiaGrosorTrazo(-e.getWheelRotation());
+        }
+        else{
         //enivar informacion de rueda del raton para cambiar el grosor del trazo
         vp.cambiaGrosorTrazo(-e.getWheelRotation());
+        }
     }
 
 }

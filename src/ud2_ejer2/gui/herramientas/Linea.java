@@ -60,6 +60,12 @@ public class Linea extends Herramienta {
         //si se ha agregado un solo punto es que hay que dibujar la linea
         //hasta el segundo punto recogido de la posicion del raton
         if (puntos.size()==1&&getParametros()){
+            //actualizar puntos gradiente
+            x1=puntos.get(0).x;
+            y1=puntos.get(0).y;
+            x2=punto.x;
+            y2=punto.y;
+
             //pintar imagen original guardada en buffer
             pintarBufferTemporalEnLienzo();
             //dibujar linea

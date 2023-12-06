@@ -80,13 +80,16 @@ public class Texto extends Herramienta {
      */
     private void dibujar(Point punto) {
         
+        //coordenadas para el gradiente
         x1=punto.x;
         y1=(int) (punto.y-fuente.getSize()/1.5);
         x2=x1+fuente.getSize()*5;
         y2=punto.y;
         
-        
+        //imagen original
         pintarBufferTemporalEnLienzo();
+        
+        //dibujar texto
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
         //dibujar texto
