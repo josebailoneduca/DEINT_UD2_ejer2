@@ -24,7 +24,6 @@ import ud2_ejer2.gui.ventanas.VentanaPrincipal;
  * 
  * 
  * @see Herramienta
- * @see Herramienta
  * @author Jose Javier BO
  */
 public class Linea extends Herramienta {
@@ -73,8 +72,10 @@ public class Linea extends Herramienta {
     }
 
     /**
-     * Hace lo que moved
-     * @param punto El punto en 
+     * Redirige al comportamiento de mouseMoved
+     * 
+     * @param punto Posicion actual del raton
+     * @see Linea#mouseMoved(java.awt.Point) 
      */
     @Override
     public void mouseDragged(Point punto) {

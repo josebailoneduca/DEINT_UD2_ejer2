@@ -8,10 +8,17 @@ package ud2_ejer2.gui.herramientas;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.awt.MultipleGradientPaint;
+import java.awt.Paint;
 import java.awt.Point;
+import java.awt.RadialGradientPaint;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
@@ -19,7 +26,8 @@ import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 /**
  * Clase básica de herramienta. El resto de herramientas extienden de esta.
  * 
- * Contiene variables y métodos para recopilar los parametros comunes de dibujo.
+ * Contiene variables y métodos para recopilar los parametros comunes de dibujo
+ * y metodos a conectar con los eventos recibidos del ratón por un listener
  * 
  * 
  * @author Jose Javier BO
@@ -36,19 +44,42 @@ abstract public class Herramienta {
      */
     protected VentanaPrincipal vp;
     
+   
+    
+    
     /**
      * Imagen en memoria para usarse como buffer temporal si la herramienta lo necesita
      */
     BufferedImage tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     //parametros generales
+    
+    public static final int LINEAL=0;
+    public static final int RADIAL=1;
+    
+    MultipleGradientPaint gradiente;
+    TexturePaint textura;
+    String tipoPintura="color";
     Color color; // color de dibujado
+    int tipoGradiente;
+    Color colorGradiente1;
+    Color colorGradiente2;
+    Color colorGradiente3;
+    
     float grosor; // grosor de trazo a usar
+    float[]estiloLinea={1};
+    int fase=0;
     Stroke trazo;// objeto trazo preparado para usar
     int ancho;// ancho comun para dibujar figuras
     int alto;// alto comun para dibujar fituras
     boolean soloBorde;
-
+    
+    int x1=0;
+    int y1=0;
+    int x2=1;
+    int y2=1;
+    
+    
     /**
      * Constructor
      * @param vp Referencia a la ventana principal de la que coger los parametros de dibujado
@@ -57,6 +88,9 @@ abstract public class Herramienta {
     public Herramienta(VentanaPrincipal vp, Lienzo lienzo) {
         this.vp = vp;
         this.lienzo=lienzo;
+        x2=lienzo.getWidth();
+        y2=lienzo.getHeight();
+
     }
 
  
@@ -67,11 +101,21 @@ abstract public class Herramienta {
      * @return True si los ha recogido False si no los ha recogido
      */
     protected boolean getParametros() {
-
+        tipoPintura=vp.buttonGroupPintura.getSelection().getActionCommand();
         color = vp.panelColorSeleccionado.getBackground();
+        tipoGradiente = vp.inputTipoGradiente.getSelectedIndex();
+        colorGradiente1=vp.panelGradColor1.getBackground();
+        colorGradiente2=vp.panelGradColor2.getBackground();
+        colorGradiente3=vp.panelGradColor3.getBackground();
         try {
             grosor = Float.parseFloat(vp.inputComunGrosor.getText());
-            trazo = new BasicStroke(grosor, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            int idEstilo= vp.inputComunEstiloLinea.getSelectedIndex();
+            estiloLinea=new float[vp.estilosLineas[idEstilo].length];
+            for (int i=0;i<vp.estilosLineas[idEstilo].length;i++){
+            estiloLinea[i]=vp.estilosLineas[idEstilo][i]*grosor/4;
+            }
+            fase=vp.inputComunEstiloLineaFase.getValue();
+            trazo = new BasicStroke(grosor, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,0,estiloLinea,fase);
         } catch (NumberFormatException ex) {
 
         } catch (IllegalArgumentException ex) {
@@ -91,7 +135,8 @@ abstract public class Herramienta {
             return false;
         }
         soloBorde = vp.buttonGroupRelleno.getSelection().getActionCommand().equals("soloborde");
-
+        
+        
         return true;
     }
 
@@ -102,16 +147,17 @@ abstract public class Herramienta {
      * @param g Graphics2D a usar
      */
     protected void setParametrosDibujo(Graphics2D g) {
-        g.setColor(color);
+        this.setPintura(g);
         g.setStroke(trazo);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
+
     }
 
     
     
     
-    //receptores de ordenes relativas a acciones tipicas del ratón
+    //Metodos receptores de ordenes relativas a acciones tipicas del ratón
     public void mouseMoved(Point punto) {
     }
 
@@ -171,4 +217,45 @@ abstract public class Herramienta {
     public void activar() {
     }
 
+    
+    
+    /**
+     * Definicion de pintura a usar. Por defecto el color
+     * @param g Graphics al que aplicar la pintura
+     */
+    protected void setPintura(Graphics2D g){
+        switch (tipoPintura) {
+            case "color" -> g.setPaint(color);
+            case "gradiente"->g.setPaint(getGradiente(x1, y1, x2, y2));
+            default ->  g.setPaint(color);
+        }
+    }
+
+    
+    protected Paint getGradiente(int x1,int y1, int x2, int y2){
+        float[] pos={0,0.5f,1};
+        Color[] colores={colorGradiente1,colorGradiente2,colorGradiente3};
+        switch (tipoGradiente) {
+            case RADIAL -> {
+        
+                return new RadialGradientPaint(
+                        new Rectangle(new Point(x1,y1), new Dimension(x2-x1, y2-y1)),
+                        pos ,
+                        colores ,
+                        MultipleGradientPaint.CycleMethod.REFLECT);
+            }
+            default -> {
+                return new LinearGradientPaint(
+                        new Point(x1,y1),
+                        new Point(x2,y2),
+                        pos ,
+                        colores ,
+                        MultipleGradientPaint.CycleMethod.REFLECT);
+            }
+                
+        }
+        
+    
+    
+    }
 }

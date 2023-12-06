@@ -80,8 +80,13 @@ public class Texto extends Herramienta {
      */
     private void dibujar(Point punto) {
         
+        x1=punto.x;
+        y1=(int) (punto.y-fuente.getSize()/1.5);
+        x2=x1+fuente.getSize()*5;
+        y2=punto.y;
+        
+        
         pintarBufferTemporalEnLienzo();
-
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
         //dibujar texto
@@ -120,6 +125,7 @@ public class Texto extends Herramienta {
             
         String estiloStr= vp.inputTextoEstilo.getSelectedItem().toString();
         String nombreFuente= vp.inputTextoFuente.getSelectedItem().toString();
+        
         
         int estilo;
         switch (estiloStr) {

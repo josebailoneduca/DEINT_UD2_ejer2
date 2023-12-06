@@ -8,6 +8,7 @@ package ud2_ejer2.gui.herramientas;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Arc2D;
 import ud2_ejer2.gui.ventanas.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
@@ -33,7 +34,9 @@ public class Arco extends Herramienta {
      * Grados que abarca el angulo
      */
     int angulo = 0;
-
+    
+    int cierre = Arc2D.OPEN;
+     
     /**
      * Constructor
      *
@@ -66,6 +69,7 @@ public class Arco extends Herramienta {
         if (!getParametros()) {
             return;
         }
+      
         //guardar la imagen original en el buffer
         guardarLienzoEnBufferTemporal();
         //digujar el arco
@@ -83,6 +87,14 @@ public class Arco extends Herramienta {
         if (!getParametros()) {
             return;
         }
+        
+        //definir punto degradado en rectangulo que ocupa
+        x1=punto.x-ancho/2;
+        y1=punto.y-alto/2;
+        x2=x1+ancho;
+        y2=y1+alto;
+        
+        
         //limpiar lienzo
         Graphics2D g = lienzo.getBufferG2D();
         //Refrescar los parametros de dibujo en g
@@ -90,12 +102,12 @@ public class Arco extends Herramienta {
         
         //pintar la imagen original
         pintarBufferTemporalEnLienzo();
-        
+        Arc2D arco = new Arc2D.Double(x1, y1, ancho, alto, inicio, angulo,cierre);
         //dibujar angulo
         if (soloBorde) {
-            g.drawArc(punto.x - (ancho / 2), punto.y - (alto / 2), ancho, alto, inicio, angulo);
+            g.draw(arco);
         } else {
-            g.fillArc(punto.x - (ancho / 2), punto.y - (alto / 2), ancho, alto, inicio, angulo);
+            g.fill(arco);
         }
         lienzo.repaint();
     }
@@ -123,7 +135,12 @@ public class Arco extends Herramienta {
             vp.msgError("Angulo del arco no válido");
             return false;
         }
-
+        switch(vp.inputArcoCierre.getSelectedIndex()){
+            case 0 -> cierre=Arc2D.OPEN;
+            case 1 -> cierre=Arc2D.CHORD;
+            case 2 -> cierre=Arc2D.PIE;
+    }
+        
         return true;
     }
 }

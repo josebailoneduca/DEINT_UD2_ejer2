@@ -23,12 +23,14 @@ import java.awt.event.MouseWheelListener;
  * @author Jose Javier BO
  */
 public class ListenerRaton implements MouseMotionListener, MouseListener, MouseWheelListener {
-
+    //ATRIBUTOS
     /**
      * Referencia a la ventana principal.
      */
     VentanaPrincipal vp;
 
+    
+    //METODOS
     /**
      * Constructor
      * 
@@ -48,6 +50,8 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
     public void mouseDragged(MouseEvent e) {
         //actualizar campos x e y de coordenadas en ventana principal
         vp.actualizaCoordenadas(e.getX(), e.getY());
+        
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseDragged(new Point(e.getX(), e.getY()));
         }
@@ -57,6 +61,8 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
     public void mouseMoved(MouseEvent e) {
         //actualizar campos x e y de coordenadas en ventana principal
         vp.actualizaCoordenadas(e.getX(), e.getY());
+        
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseMoved(new Point(e.getX(), e.getY()));
         }
@@ -64,6 +70,7 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseClicked(new Point(e.getX(), e.getY()));
         }
@@ -71,6 +78,7 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mousePressed(MouseEvent e) {
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mousePressed(new Point(e.getX(), e.getY()));
         }
@@ -78,6 +86,7 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseReleased(new Point(e.getX(), e.getY()));
         }
@@ -85,6 +94,7 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseEntered(new Point(e.getX(), e.getY()));
         }
@@ -92,6 +102,7 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
 
     @Override
     public void mouseExited(MouseEvent e) {
+        //Enviar mensaje a herramienta actual
         if (vp.herramientaActual != null) {
             vp.herramientaActual.mouseExited(new Point(e.getX(), e.getY()));
         }

@@ -59,6 +59,12 @@ public class Rectangulo extends Herramienta {
         dibujar(punto);
     }
 
+ 
+
+    
+    
+    
+    
     
      /**
      * Ejecuta el dibujado. Primero limpia el lienzo. Redibuja sobre el lo almacenado 
@@ -67,16 +73,22 @@ public class Rectangulo extends Herramienta {
      * @param punto posicion del raton
      */
     private void dibujar(Point punto) {
+        //asignar puntos para degradado
+        x1=punto.x-ancho/2;
+        y1=punto.y-alto/2;
+        x2=x1+ancho;
+        y2=y1+alto;
+        
+        //dibujado real
         pintarBufferTemporalEnLienzo();
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
         //dibujar rectangulo
         if (soloBorde) {
-            g.drawRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto);
+            g.drawRect(x1, y1, ancho, alto);
         } else {
-            g.fillRect(punto.x-ancho/2, punto.y-alto/2, ancho, alto);
+            g.fillRect(x1, y1, ancho, alto);
         }
         lienzo.repaint();    }
- 
 
 }

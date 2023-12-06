@@ -63,6 +63,12 @@ public class Ovalo extends Herramienta {
      * @param punto posicion del raton
      */
     private void dibujar(Point punto) {
+        
+        x1=punto.x-ancho/2;
+        y1=punto.y-alto/2;
+        x2=x1+ancho;
+        y2=y1+alto;
+        
         pintarBufferTemporalEnLienzo();
         Graphics2D g = lienzo.getBufferG2D();
         setParametrosDibujo(g);
