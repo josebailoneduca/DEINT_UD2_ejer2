@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -119,10 +120,11 @@ public class GestorTexturas {
     public int cargarArchivo(File rutaArchivo) {
         try {
             BufferedImage img = ImageIO.read(rutaArchivo);
+            if (img!=null)
             return addTextura(img, rutaArchivo.getName());
         } catch (IOException ex) {
-            return -1;
         }
+            return -1;
     }
 }//end GestorTexturas
 

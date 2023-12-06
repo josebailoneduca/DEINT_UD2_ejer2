@@ -27,8 +27,9 @@ import ud2_ejer2.gui.ventanas.VentanaPrincipal;
  * Clase básica de herramienta. El resto de herramientas extienden de esta.
  *
  * Contiene variables y métodos para recopilar los parametros comunes de dibujo
- * y metodos a conectar con los eventos recibidos del ratón por un listener
- *
+ * y aplicarlos al dibujar.
+ * 
+ * Tambien tiene metodos a conectar con los eventos recibidos del ratón por un listener
  *
  * @author Jose Javier BO
  */
@@ -56,7 +57,7 @@ abstract public class Herramienta {
     public static final int RADIAL = 1;
 
     MultipleGradientPaint gradiente;//gradiente actaul
-    BufferedImage imgTextura;
+    BufferedImage imgTextura;//imagen usada como textura
     TexturePaint textura; // textura actual
     String tipoPintura = "color"; // tipo de pintura (color, gradiente, textura)
     Color color; // color de dibujado
@@ -66,11 +67,11 @@ abstract public class Herramienta {
     Color colorGradiente2;
     Color colorGradiente3;
 
-    //coordenadas en las que basar el gradiente
-    //cada herramienta debe actualizarlo a sus necesidades
+    //coordenadas en las que basar el gradiente y el desfase de las texturas
+    //cada herramienta debe actualizarlo a segun sus necesidades
     //Estas coordenadas son usadas por el generador de gradientes
     //para hacer un gradiente inscrito en un rectangulo definido por estas
-    //coordenadas
+    //coordenadas. Tambien son usadas por el generador de texturas.
     int x1 = 0;
     int y1 = 0;
     int x2 = 1;
@@ -127,6 +128,7 @@ abstract public class Herramienta {
      * @return True si los ha recogido False si no los ha recogido
      */
     protected boolean getParametros() {
+        //pintura
         tipoPintura = vp.buttonGroupPintura.getSelection().getActionCommand();
         color = vp.panelColorSeleccionado.getBackground();
         tipoGradiente = vp.inputTipoGradiente.getSelectedIndex();
@@ -134,6 +136,8 @@ abstract public class Herramienta {
         colorGradiente2 = vp.panelGradColor2.getBackground();
         colorGradiente3 = vp.panelGradColor3.getBackground();
         imgTextura = vp.textura;
+        
+        //trazo
         try {
             grosor = Float.parseFloat(vp.inputComunGrosor.getText());
             int idEstilo = vp.inputComunEstiloLinea.getSelectedIndex();
@@ -285,8 +289,8 @@ abstract public class Herramienta {
     }//fin getgradiente
     
     
-        /**
-     * Devuelve el gradiente inscrito en un rectangulo
+     /**
+     * Devuelve la textura a usar
      *
      * @param tx x inicial superior izqueirda
      * @param ty y inicial superior izauierda
