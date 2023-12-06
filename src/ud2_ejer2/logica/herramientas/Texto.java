@@ -4,12 +4,12 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.gui.herramientas;
+package ud2_ejer2.logica.herramientas;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import ud2_ejer2.gui.ventanas.Lienzo;
+import ud2_ejer2.gui.componentes.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**

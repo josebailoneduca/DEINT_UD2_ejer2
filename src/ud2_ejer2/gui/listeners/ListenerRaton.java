@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.gui.ventanas;
+package ud2_ejer2.gui.listeners;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
  * Clase listener del ratón. Se encarga de escuchar las acciones del ratón y enviarlas
@@ -52,8 +53,8 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
         vp.actualizaCoordenadas(e.getX(), e.getY());
         
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseDragged(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseDragged(new Point(e.getX(), e.getY()));
         }
     }
 
@@ -63,62 +64,65 @@ public class ListenerRaton implements MouseMotionListener, MouseListener, MouseW
         vp.actualizaCoordenadas(e.getX(), e.getY());
         
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseMoved(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseMoved(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseClicked(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseClicked(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mousePressed(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mousePressed(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseReleased(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseReleased(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseEntered(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseEntered(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         //Enviar mensaje a herramienta actual
-        if (vp.herramientaActual != null) {
-            vp.herramientaActual.mouseExited(new Point(e.getX(), e.getY()));
+        if (vp.getHerramientaActual() != null) {
+            vp.getHerramientaActual().mouseExited(new Point(e.getX(), e.getY()));
         }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        
         if (e.isControlDown()){
         //enviar informacion de rueda del raton para cambiar la fase del trazo
-        vp.cambiaGrosorTrazo(-e.getWheelRotation());
+        vp.cambiarFaseTrazo(-e.getWheelRotation());
         }
         else{
         //enivar informacion de rueda del raton para cambiar el grosor del trazo
         vp.cambiaGrosorTrazo(-e.getWheelRotation());
         }
+        
+        //acviar el evento mouseDragged que es usado por las herramientas para 
+        //refrescar el estado
+        mouseDragged(e);
     }
 
 }

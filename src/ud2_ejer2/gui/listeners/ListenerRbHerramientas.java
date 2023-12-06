@@ -4,20 +4,21 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.gui.ventanas;
+package ud2_ejer2.gui.listeners;
 
-import ud2_ejer2.gui.herramientas.DibujoLibre;
+import ud2_ejer2.logica.herramientas.DibujoLibre;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JRadioButton;
-import ud2_ejer2.gui.herramientas.Arco;
-import ud2_ejer2.gui.herramientas.Linea;
-import ud2_ejer2.gui.herramientas.Ovalo;
-import ud2_ejer2.gui.herramientas.Poligono;
-import ud2_ejer2.gui.herramientas.Polilinea;
-import ud2_ejer2.gui.herramientas.Rectangulo;
-import ud2_ejer2.gui.herramientas.RectanguloRedondo;
-import ud2_ejer2.gui.herramientas.Texto;
+import ud2_ejer2.logica.herramientas.Arco;
+import ud2_ejer2.logica.herramientas.Linea;
+import ud2_ejer2.logica.herramientas.Ovalo;
+import ud2_ejer2.logica.herramientas.Poligono;
+import ud2_ejer2.logica.herramientas.Polilinea;
+import ud2_ejer2.logica.herramientas.Rectangulo;
+import ud2_ejer2.logica.herramientas.RectanguloRedondo;
+import ud2_ejer2.logica.herramientas.Texto;
+import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
  * Escucha el pulsado de los radiobuttons de las herramientas. Cuando recibe

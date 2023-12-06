@@ -6,24 +6,35 @@ Lista de paquetes:
  */
 package ud2_ejer2.gui.ventanas;
 
+import ud2_ejer2.gui.componentes.Lienzo;
+import ud2_ejer2.gui.listeners.ListenerRaton;
+import ud2_ejer2.gui.listeners.ListenerRbHerramientas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.TexturePaint;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import ud2_ejer2.gui.herramientas.DibujoLibre;
-import ud2_ejer2.gui.herramientas.Herramienta;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import ud2_ejer2.logica.GestorTexturas;
+import ud2_ejer2.logica.herramientas.DibujoLibre;
+import ud2_ejer2.logica.herramientas.Herramienta;
 
 /**
  * Clase central del ejercicio UI2_2
  *
  * Ademas de mostrar la interfaz grafica se encarga de almacenar el estado
  * respecto a qué herramienta de dibujo es la activa y qué valores de dibujado
- * deben usarse (color, grosor, tamaños...)
- *
- *
+ * deben usarse (color, grosor, tamaños, degradados, texturas...)
  *
  *
  *
@@ -31,30 +42,16 @@ import ud2_ejer2.gui.herramientas.Herramienta;
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
 
-    public Herramienta herramientaActual;
-
+    private Herramienta herramientaActual;
     public float[][] estilosLineas = {{1, 0}, {15, 10}, {20, 10, 20, 40}, {15, 10, 2.5f, 10}};
+    private GestorTexturas gestorTextura = new GestorTexturas();
+
+    public BufferedImage textura;
 
     /**
      * Constructor. Inicia los componentes de la GUI, asigna el listener para
      * escuchar los clicks en los radiobuttons de herramientas y la escucha de
      * raton sobre el panel de dibujo que es de clase Lienzo.
-     *
-     * - Cuando el listener de botones de herramientas detecta la selección de
-     * una nueva herramienta el lístener informa a esta clase de qué herramienta
-     * ha sido la elegida para que la instancie y la establezca como
-     * "herramienta actual" que será con la que se dibuje.
-     *
-     * - Cuando el listener de ratón recibe algun evento recoge la herramienta
-     * actual definida en esta clase y le manda mensajes a la herramienta según
-     * el evento recibido.
-     *
-     * - Las herramientas durante su actividad recogen los datos de
-     * configuracion para dibujar de los componentes de GUI de esta clase.
-     * Ademas algunas herramientas actualizan información de algunos componentes
-     * de la interfaz como los puntos restantes o los puntos dibujados que aparecen
-     * en la seeción inferior derecha de Lista de puntos
-     *
      *
      * @see Lienzo
      * @see ListenerRaton
@@ -66,6 +63,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         initEventos();
         //inicializacion de valores
         lienzo.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        //coger miniatura
+        seleccionarTextura(1);
         resetValores();
         setHerramienta(DibujoLibre.class);
     }
@@ -101,7 +100,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * @param x Coordenada X
      * @param y Coordenada Y
      */
-    void actualizaCoordenadas(int x, int y) {
+    public void actualizaCoordenadas(int x, int y) {
 
         outputX.setText("" + x);
         outputY.setText("" + y);
@@ -124,6 +123,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             herramientaActual.activar();
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
         }
+    }
+
+    /**
+     * Devuelve la herramienta actual
+     *
+     * @return La herramienta
+     */
+    public Herramienta getHerramientaActual() {
+        return herramientaActual;
     }
 
     /**
@@ -150,13 +158,31 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * @param i El valor a agregar. Negativo para reducir el trazo y positivo
      * para aumentarlo
      */
-    void cambiaGrosorTrazo(int i) {
+    public void cambiaGrosorTrazo(int i) {
         try {
             int grosor = (Integer.parseInt(inputComunGrosor.getText())) + i;
             if (grosor < 1) {
                 grosor = 1;
             }
             inputComunGrosor.setText("" + grosor);
+        } catch (NumberFormatException ex) {
+        }
+    }
+
+    /**
+     * Agrega el valor recibido a la fase de trazo actual. Tiene una limitación
+     * inferior de 0
+     *
+     * @param i El valor a agregar. Negativo para reducir el trazo y positivo
+     * para aumentarlo
+     */
+    public void cambiarFaseTrazo(int i) {
+        try {
+            int fase = (Integer) (inputComunEstiloLineaFase.getValue()) + i;
+            if (fase < 0) {
+                fase = 0;
+            }
+            inputComunEstiloLineaFase.setValue(fase);
         } catch (NumberFormatException ex) {
         }
     }
@@ -237,12 +263,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelColorSeleccionado = new javax.swing.JPanel();
         rbTextura = new javax.swing.JRadioButton();
         inputTextura = new javax.swing.JComboBox<>();
-        panelTextura = new javax.swing.JPanel();
         rbGradiente = new javax.swing.JRadioButton();
         inputTipoGradiente = new javax.swing.JComboBox<>();
         panelGradColor1 = new javax.swing.JPanel();
         panelGradColor2 = new javax.swing.JPanel();
         panelGradColor3 = new javax.swing.JPanel();
+        lbTextura = new javax.swing.JLabel();
         lbGrosor1 = new javax.swing.JLabel();
         inputComunEstiloLineaFase = new javax.swing.JSpinner();
         panelCoordenadas = new javax.swing.JPanel();
@@ -257,7 +283,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
         btnLimpiar = new javax.swing.JButton();
-        lienzo = new ud2_ejer2.gui.ventanas.Lienzo();
+        lienzo = new ud2_ejer2.gui.componentes.Lienzo();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -282,7 +308,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         rbOvalo.setText("Óvalo");
         rbOvalo.setActionCommand("ovalo");
 
-        panTipoGrafico1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Rectángulo redondo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
+        panTipoGrafico1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Rectángulo redondo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupHerramientas.add(rbRectanguloRedondo);
         rbRectanguloRedondo.setText("Rectáng. redondo");
@@ -328,7 +354,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panTipoGrafico2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Arco", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
+        panTipoGrafico2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Arco", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupHerramientas.add(rbArco);
         rbArco.setText("Arco");
@@ -384,7 +410,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panTipoGrafico3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Polígono", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
+        panTipoGrafico3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Polígono", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupHerramientas.add(rbPoligono);
         rbPoligono.setText("Polígono");
@@ -418,7 +444,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panTipoGrafico4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Polilínea", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
+        panTipoGrafico4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Polilínea", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupHerramientas.add(rbPolilinea);
         rbPolilinea.setText("Polilínea");
@@ -452,7 +478,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
-        panTipoGrafico5.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Texto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
+        panTipoGrafico5.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Texto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 2, 12))); // NOI18N
 
         buttonGroupHerramientas.add(rbTexto);
         rbTexto.setText("Texto");
@@ -636,26 +662,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         inputTextura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cuadros", "Puntos", "Archivo" }));
         inputTextura.setToolTipText("Tipo de textura");
-
-        panelTextura.setBackground(new java.awt.Color(0, 0, 0));
-        panelTextura.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        panelTextura.setToolTipText("Vista previa de textura");
-        panelTextura.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelTexturaMouseClicked(evt);
+        inputTextura.setMaximumSize(new java.awt.Dimension(77, 22));
+        inputTextura.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputTexturaActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout panelTexturaLayout = new javax.swing.GroupLayout(panelTextura);
-        panelTextura.setLayout(panelTexturaLayout);
-        panelTexturaLayout.setHorizontalGroup(
-            panelTexturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
-        );
-        panelTexturaLayout.setVerticalGroup(
-            panelTexturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
 
         buttonGroupPintura.add(rbGradiente);
         rbGradiente.setText("Gradient.");
@@ -724,6 +736,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGap(0, 19, Short.MAX_VALUE)
         );
 
+        lbTextura.setBackground(new java.awt.Color(255, 255, 255));
+        lbTextura.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/add.png"))); // NOI18N
+        lbTextura.setMaximumSize(new java.awt.Dimension(32, 32));
+        lbTextura.setMinimumSize(new java.awt.Dimension(32, 32));
+        lbTextura.setPreferredSize(new java.awt.Dimension(32, 32));
+
         javax.swing.GroupLayout panelTipoRellenoLayout = new javax.swing.GroupLayout(panelTipoRelleno);
         panelTipoRelleno.setLayout(panelTipoRellenoLayout);
         panelTipoRellenoLayout.setHorizontalGroup(
@@ -750,24 +768,29 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(panelGradColor3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelTipoRellenoLayout.createSequentialGroup()
-                        .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lbTextura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelTipoRellenoLayout.setVerticalGroup(
             panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelTipoRellenoLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(panelColorSeleccionado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(rbTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(panelTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(rbColor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panelTipoRellenoLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(panelColorSeleccionado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(inputTextura, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(rbTextura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(rbColor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(panelTipoRellenoLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lbTextura, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(panelTipoRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(rbGradiente)
                     .addComponent(panelGradColor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -789,8 +812,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panOpcionescomunesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelTipoRelleno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panOpcionescomunesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panOpcionescomunesLayout.createSequentialGroup()
                         .addComponent(lbGrosor1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -800,7 +822,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(inputComunEstiloLinea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(inputComunEstiloLineaFase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(inputComunEstiloLineaFase))
+                    .addComponent(panelTipoRelleno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panOpcionescomunesLayout.createSequentialGroup()
                         .addComponent(lbComunRelleno)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -849,7 +872,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelCoordenadas.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), "Coordenadas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
 
         lbRaton.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        lbRaton.setText("Raton");
+        lbRaton.setText("Ratón");
 
         lbX.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lbX.setText("X");
@@ -965,7 +988,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addComponent(panelListaPuntos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnLimpiar)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         scrollHeramientas.setViewportView(panGeneralHerramientas);
@@ -997,7 +1020,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(scrollHeramientas)
+                .addComponent(scrollHeramientas, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(lienzo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1014,7 +1037,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         //limpiar el lienzo
         Graphics2D g = lienzo.getBufferG2D();
         g.setColor(Color.white);
-        g.fillRect(0, 0, lienzo.buffer.getWidth(), lienzo.buffer.getHeight());
+        g.fillRect(0, 0, lienzo.getBuffer().getWidth(), lienzo.getBuffer().getHeight());
         lienzo.repaint();
 
         //refrescar la herramienta actual
@@ -1051,13 +1074,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             panelColorSeleccionado.setBackground(colorSeleccionado);
     }//GEN-LAST:event_panelColorSeleccionadoMouseClicked
 
-    private void panelTexturaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelTexturaMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_panelTexturaMouseClicked
-
     private void rbColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbColorActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_rbColorActionPerformed
+
+    private void inputTexturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputTexturaActionPerformed
+        seleccionarTextura(inputTextura.getSelectedIndex());
+    }//GEN-LAST:event_inputTexturaActionPerformed
 
 // <editor-fold defaultstate="collapsed" desc="Variables generadas"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1102,10 +1125,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lbPuntosRestantes;
     private javax.swing.JLabel lbRaton;
     private javax.swing.JLabel lbTamano;
+    private javax.swing.JLabel lbTextura;
     private javax.swing.JLabel lbX;
     private javax.swing.JLabel lbY;
     private javax.swing.JLabel lbnpuntos;
-    private ud2_ejer2.gui.ventanas.Lienzo lienzo;
+    private ud2_ejer2.gui.componentes.Lienzo lienzo;
     private javax.swing.JTextField outputX;
     private javax.swing.JTextField outputY;
     private javax.swing.JPanel panGeneralHerramientas;
@@ -1122,7 +1146,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public javax.swing.JPanel panelGradColor2;
     public javax.swing.JPanel panelGradColor3;
     private javax.swing.JPanel panelListaPuntos;
-    public javax.swing.JPanel panelTextura;
     private javax.swing.JPanel panelTipoRelleno;
     private javax.swing.JRadioButton rbArco;
     private javax.swing.JRadioButton rbColor;
@@ -1141,7 +1164,42 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrollHeramientas;
     public javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
+
+    private void seleccionarTextura(int i) {
+        if (i == 0) {
+            cargarTextura();
+        } else {
+            BufferedImage img = gestorTextura.getMiniatura(i);
+            ImageIcon icono = new ImageIcon(img);
+            lbTextura.setIcon(icono);
+            ArrayList<String> listaTexturas = gestorTextura.getNombresTexturas();
+            inputTextura.setModel(new DefaultComboBoxModel<String>(gestorTextura.getNombresTexturas().toArray(new String[0])));
+            inputTextura.setSelectedIndex(i);
+            textura = gestorTextura.getTextura(i);
+        }
+
+    }
+
 //</editor-fold>
 //</editor-fold>
+    @Override
+    public Insets insets() {
+        return super.insets(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
+
+    private void cargarTextura() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("./src/imagenes"));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de imagen", "jpg", "png", "gif", "jpeg");
+
+        fileChooser.setFileFilter(filter);
+        int resultado = fileChooser.showOpenDialog(this);
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            int i = gestorTextura.cargarArchivo(fileChooser.getSelectedFile());
+            seleccionarTextura(i);
+        }else{
+        seleccionarTextura(1);
+                }
+    }
 
 }

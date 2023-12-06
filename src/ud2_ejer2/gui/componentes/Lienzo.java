@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.gui.ventanas;
+package ud2_ejer2.gui.componentes;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;

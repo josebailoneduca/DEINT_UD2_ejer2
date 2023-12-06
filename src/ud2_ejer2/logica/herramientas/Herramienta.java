@@ -4,7 +4,7 @@ LICENCIA JOSE JAVIER BO
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
 Lista de paquetes:
  */
-package ud2_ejer2.gui.herramientas;
+package ud2_ejer2.logica.herramientas;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,7 +20,7 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import ud2_ejer2.gui.ventanas.Lienzo;
+import ud2_ejer2.gui.componentes.Lienzo;
 import ud2_ejer2.gui.ventanas.VentanaPrincipal;
 
 /**
@@ -56,6 +56,7 @@ abstract public class Herramienta {
     public static final int RADIAL = 1;
 
     MultipleGradientPaint gradiente;//gradiente actaul
+    BufferedImage imgTextura;
     TexturePaint textura; // textura actual
     String tipoPintura = "color"; // tipo de pintura (color, gradiente, textura)
     Color color; // color de dibujado
@@ -132,6 +133,7 @@ abstract public class Herramienta {
         colorGradiente1 = vp.panelGradColor1.getBackground();
         colorGradiente2 = vp.panelGradColor2.getBackground();
         colorGradiente3 = vp.panelGradColor3.getBackground();
+        imgTextura = vp.textura;
         try {
             grosor = Float.parseFloat(vp.inputComunGrosor.getText());
             int idEstilo = vp.inputComunEstiloLinea.getSelectedIndex();
@@ -223,6 +225,8 @@ abstract public class Herramienta {
                 g.setPaint(color);
             case "gradiente" ->
                 g.setPaint(getGradiente(x1, y1, x2, y2));
+            case "textura" ->
+                g.setPaint(getTextura(x1, y1));
             default ->
                 g.setPaint(color);
         }
@@ -277,7 +281,18 @@ abstract public class Herramienta {
                         colores,
                         MultipleGradientPaint.CycleMethod.REFLECT);
             }
-
         }//fin switch
     }//fin getgradiente
+    
+    
+        /**
+     * Devuelve el gradiente inscrito en un rectangulo
+     *
+     * @param tx x inicial superior izqueirda
+     * @param ty y inicial superior izauierda
+     * @return La textura
+     */
+    protected Paint getTextura(int tx, int ty) {
+        return new TexturePaint(imgTextura, new Rectangle(tx,ty, imgTextura.getWidth(), imgTextura.getHeight()));
+    }
 }//fin clase
